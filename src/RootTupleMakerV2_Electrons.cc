@@ -84,7 +84,9 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   produces <std::vector<double> > ( prefix + "SCRawEnergy"              + suffix );
 
   // ID information
-  
+  produces <std::vector<double> > ( prefix + "mvatrigV0"                + suffix );
+  produces <std::vector<double> > ( prefix + "mvaNontrigV0"             + suffix );
+
   produces <std::vector<int> >    ( prefix + "PassId"                   + suffix );
   produces <std::vector<int> >    ( prefix + "PassEGammaIDVeto"         + suffix );
   produces <std::vector<int> >    ( prefix + "PassEGammaIDLoose"        + suffix );
@@ -245,6 +247,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::auto_ptr<std::vector<double> >  scRawEnergy               ( new std::vector<double>()  );
 
   // ID information
+  std::auto_ptr<std::vector<double > > mvatrigV0                   ( new std::vector<double>   ()  );
+  std::auto_ptr<std::vector<double > > mvaNontrigV0                   ( new std::vector<double>   ()  );
+
   std::auto_ptr<std::vector<int > >    passIds                   ( new std::vector<int>   ()  );
   std::auto_ptr<std::vector<int > >    passEGammaIDVeto          ( new std::vector<int>   ()  );
   std::auto_ptr<std::vector<int > >    passEGammaIDLoose         ( new std::vector<int>   ()  );
@@ -520,6 +525,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       if (it->electronID("mvaTrigV0"          )>0) passId = passId | 1<<5;
       if (it->electronID("mvaNonTrigV0"       )>0) passId = passId | 1<<6;
       
+      
+      //// Add the electron mva variable
+      float mva_trigV0 = it->electronID("mvaTrigV0"          );
+      float mva_NontrigV0 = it->electronID("mvaNonTrigV0"          );
+      
+      
       //------------------------------------------------------------------------
       // Trigger matching
       // 
@@ -701,6 +712,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       eSuperClusterOverP       -> push_back( it->eSuperClusterOverP() );
 
       // ID information
+      
+      mvatrigV0                -> push_back(mva_trigV0);
+      mvaNontrigV0             -> push_back(mva_NontrigV0);
       passIds                  -> push_back( passId );
       passEGammaIDVeto         -> push_back (EgammaCutBasedEleId::TestWP(EgammaCutBasedEleId::VETO  , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso));
       passEGammaIDLoose        -> push_back (EgammaCutBasedEleId::TestWP(EgammaCutBasedEleId::LOOSE , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso));
@@ -837,6 +851,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put( scRawEnergy             , prefix + "SCRawEnergy"              + suffix );
 
   // ID information 
+  iEvent.put( mvatrigV0               , prefix + "mvatrigV0"               + suffix );
+  iEvent.put( mvaNontrigV0            , prefix + "mvaNontrigV0"            + suffix );
   iEvent.put( passIds                 , prefix + "PassId"                   + suffix );
   iEvent.put( passEGammaIDVeto        , prefix + "PassEGammaIDVeto"         + suffix );
   iEvent.put( passEGammaIDLoose       , prefix + "PassEGammaIDLoose"        + suffix );
