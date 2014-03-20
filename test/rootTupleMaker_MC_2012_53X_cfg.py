@@ -111,6 +111,8 @@ process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 process.cleanPatTaus.preselection = cms.string(' tauID("decayModeFinding") > 0.5 ')
 process.cleanPatTaus.finalCut     = cms.string(' pt > 15.0 & abs(eta) < 2.5      ')
 
+process.cleanPatJetsAK5PF.finalCut    = cms.string('abs(eta) < 5. ')
+
 #----------------------------------------------------------------------------------------------------
 # Add Tau ID sources (HPS Taus)
 #----------------------------------------------------------------------------------------------------
@@ -147,6 +149,9 @@ process.analysisPatTaus.preselection = cms.string(
     ' tauID("againstElectronLooseMVA3") > 0.5'
 )
 process.analysisPatTaus.finalCut = cms.string('pt > 20. & abs(eta) < 2.3')
+
+
+
 
 process.cleanPatCandidates.replace ( process.cleanPatTaus, process.cleanPatTaus + process.analysisPatTaus )
 

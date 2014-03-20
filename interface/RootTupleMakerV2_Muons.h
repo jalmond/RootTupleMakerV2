@@ -15,7 +15,7 @@ class RootTupleMakerV2_Muons : public edm::EDProducer {
   const std::string     prefix,suffix;
   const unsigned int    maxSize;
   const double          muonIso;
-  const std::string     muonID, singleMuonTriggerMatch, singleIsoMuonTriggerMatch;
+  const std::string     muonID, singleMuonTriggerMatch, singleIsoMuonTriggerMatch, doubleMuonTriggerMatch;
   const bool            beamSpotCorr;
   const bool            useCocktailRefits;
   const edm::InputTag   vtxInputTag;

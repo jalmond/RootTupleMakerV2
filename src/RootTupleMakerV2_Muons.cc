@@ -25,6 +25,7 @@ muonIso  (iConfig.getParameter<double>       ("MuonIso")),
 muonID   (iConfig.getParameter<std::string>  ("MuonID")),
 								 // trigger matching string
 singleMuonTriggerMatch(iConfig.getParameter<std::string>("SingleMuonTriggerMatch")),
+doubleeMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
 								 // trigger matching string
 singleIsoMuonTriggerMatch(iConfig.getParameter<std::string>("SingleIsoMuonTriggerMatch")),
 beamSpotCorr      (iConfig.getParameter<bool>("BeamSpotCorr")),
@@ -126,6 +127,11 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchPt"      + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchEta"     + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchPhi"     + suffix );
+	//  HLT Double Muon 
+	produces <std::vector<bool  > > ( prefix + "HLTDoubleMuonMatched"      + suffix );
+        produces <std::vector<double> > ( prefix + "HLTDoubleMuonMatchPt"      + suffix );
+        produces <std::vector<double> > ( prefix + "HLTDoubleMuonMatchEta"     + suffix );
+        produces <std::vector<double> > ( prefix + "HLTDoubleMuonMatchPhi"     + suffix );
 	//  HLT Single Iso Muon
 	produces <std::vector<bool  > > ( prefix + "HLTSingleIsoMuonMatched"   + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleIsoMuonMatchPt"   + suffix );
@@ -264,6 +270,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchPt     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchEta    ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchPhi    ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<bool  > >  HLTDoubleMuonMatched     ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchPt     ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchEta    ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  HLTDoublwMuonMatchPhi    ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<bool  > >  HLTSingleIsoMuonMatched  ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleIsoMuonMatchPt  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleIsoMuonMatchEta ( new std::vector<double>()  );
@@ -444,6 +454,24 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				HLTSingleMuonMatchEta -> push_back ( -999. );
 				HLTSingleMuonMatchPhi -> push_back ( -999. );
 			}
+
+			// HLT Double Muon trigger matching
+                        const pat::TriggerObjectRef doubleMuonTrigRef( matchHelper.triggerMatchObject( muons, iMuon,  doubleMuonTriggerMatch, iEvent, *triggerEvent ) );
+                        if ( doubleMuonTrigRef.isAvailable() && doubleMuonTrigRef.isNonnull() )
+			  {
+			    HLTDoubleMuonMatched  -> push_back ( true ) ;
+			    HLTDoubleMuonMatchPt  -> push_back ( doubleMuonTrigRef -> pt() );
+			    HLTDoubleMuonMatchEta -> push_back ( doubleMuonTrigRef -> eta());
+			    HLTDoubleMuonMatchPhi -> push_back ( doubleMuonTrigRef -> phi());
+			  }
+			else
+			  {
+			    HLTDoubleMuonMatched  -> push_back ( false ) ;
+			    HLTDoubleMuonMatchPt  -> push_back ( -999. );
+			    HLTDoubleMuonMatchEta -> push_back ( -999. );
+			    HLTDoubleMuonMatchPhi -> push_back ( -999. );
+			  }
+
 
 			// HLT Single Iso Muon trigger matching
 			const pat::TriggerObjectRef singleIsoMuonTrigRef( matchHelper.triggerMatchObject( muons, iMuon,  singleIsoMuonTriggerMatch, iEvent, *triggerEvent ) );
@@ -866,6 +894,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( HLTSingleMuonMatchPt     , prefix + "HLTSingleMuonMatchPt"      + suffix );
 	iEvent.put( HLTSingleMuonMatchEta    , prefix + "HLTSingleMuonMatchEta"     + suffix );
 	iEvent.put( HLTSingleMuonMatchPhi    , prefix + "HLTSingleMuonMatchPhi"     + suffix );
+	iEvent.put( HLTDoubleMuonMatched     , prefix + "HLTDoubleMuonMatched"      + suffix );
+        iEvent.put( HLTDoubleMuonMatchPt     , prefix + "HLTDoubleMuonMatchPt"      + suffix );
+	iEvent.put( HLTDoubleMuonMatchEta    , prefix + "HLTDoubleMuonMatchEta"     + suffix );
+        iEvent.put( HLTDoubleMuonMatchPhi    , prefix + "HLTDoubleMuonMatchPhi"     + suffix );
+
 	iEvent.put( HLTSingleIsoMuonMatched  , prefix + "HLTSingleIsoMuonMatched"   + suffix );
 	iEvent.put( HLTSingleIsoMuonMatchPt  , prefix + "HLTSingleIsoMuonMatchPt"   + suffix );
 	iEvent.put( HLTSingleIsoMuonMatchEta , prefix + "HLTSingleIsoMuonMatchEta"  + suffix );
