@@ -25,7 +25,7 @@ muonIso  (iConfig.getParameter<double>       ("MuonIso")),
 muonID   (iConfig.getParameter<std::string>  ("MuonID")),
 								 // trigger matching string
 singleMuonTriggerMatch(iConfig.getParameter<std::string>("SingleMuonTriggerMatch")),
-doubleeMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
+doubleMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
 								 // trigger matching string
 singleIsoMuonTriggerMatch(iConfig.getParameter<std::string>("SingleIsoMuonTriggerMatch")),
 beamSpotCorr      (iConfig.getParameter<bool>("BeamSpotCorr")),
@@ -273,7 +273,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<bool  > >  HLTDoubleMuonMatched     ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchPt     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchEta    ( new std::vector<double>()  );
-	std::auto_ptr<std::vector<double> >  HLTDoublwMuonMatchPhi    ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchPhi    ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<bool  > >  HLTSingleIsoMuonMatched  ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleIsoMuonMatchPt  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleIsoMuonMatchEta ( new std::vector<double>()  );
