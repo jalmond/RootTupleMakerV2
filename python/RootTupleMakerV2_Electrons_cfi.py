@@ -66,7 +66,7 @@ cleanElectronTriggerMatchHLTDoubleElectron = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
 , src     = cms.InputTag( 'cleanPatElectrons' )
 , matched = cms.InputTag( 'patTrigger' )          
-, matchedCuts = cms.string( 'type( "TriggerCluster" ) && path( "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*" )' )
+, matchedCuts = cms.string( 'type( "TriggerElectron" ) && path( "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*" )' )
 , maxDeltaR = cms.double( 0.5 )
 , resolveAmbiguities    = cms.bool( True  )        # only one match per trigger object
 , resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)

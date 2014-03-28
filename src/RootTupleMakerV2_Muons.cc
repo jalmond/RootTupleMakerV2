@@ -25,6 +25,7 @@ muonIso  (iConfig.getParameter<double>       ("MuonIso")),
 muonID   (iConfig.getParameter<std::string>  ("MuonID")),
 								 // trigger matching string
 singleMuonTriggerMatch(iConfig.getParameter<std::string>("SingleMuonTriggerMatch")),
+doubleMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
 								 // trigger matching string
 singleIsoMuonTriggerMatch(iConfig.getParameter<std::string>("SingleIsoMuonTriggerMatch")),
 beamSpotCorr      (iConfig.getParameter<bool>("BeamSpotCorr")),
@@ -36,6 +37,14 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "Eta"                     + suffix );
 	produces <std::vector<double> > ( prefix + "Phi"                     + suffix );
 	produces <std::vector<double> > ( prefix + "Pt"                      + suffix );
+	produces <std::vector<double> > ( prefix + "GlobalEta"                     + suffix );
+        produces <std::vector<double> > ( prefix + "GlobalPhi"                     + suffix );
+        produces <std::vector<double> > ( prefix + "GlobalPt"                      + suffix );
+	produces <std::vector<double> > ( prefix + "GlobalE"                      + suffix );
+        produces <std::vector<double> > ( prefix + "MuonSpecEta"                     + suffix );
+        produces <std::vector<double> > ( prefix + "MuonSpecPhi"                     + suffix );
+        produces <std::vector<double> > ( prefix + "MuonSpecPt"                      + suffix );
+        produces <std::vector<double> > ( prefix + "MuonSpecE"                      + suffix );
 	produces <std::vector<double> > ( prefix + "EtaError"                + suffix );
 	produces <std::vector<double> > ( prefix + "PhiError"                + suffix );
 	produces <std::vector<double> > ( prefix + "PtError"                 + suffix );
@@ -49,6 +58,9 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "P"                       + suffix );
 	produces <std::vector<double> > ( prefix + "Energy"                  + suffix );
 	produces <std::vector<int> >    ( prefix + "Charge"                  + suffix );
+	produces <std::vector<int> >    ( prefix + "GlobalCharge"            + suffix );
+	produces <std::vector<int> >    ( prefix + "TrackerCharge"           + suffix );
+        produces <std::vector<int> >    ( prefix + "MuonSpecCharge"          + suffix );
 	produces <std::vector<int> >    ( prefix + "TrkHits"                 + suffix );
 	produces <std::vector<int> >    ( prefix + "TrkHitsTrackerOnly"      + suffix );
 	produces <std::vector<int> >    ( prefix + "GlobalTrkValidHits"      + suffix );
@@ -115,6 +127,11 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchPt"      + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchEta"     + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchPhi"     + suffix );
+	//  HLT Double Muon 
+	produces <std::vector<bool  > > ( prefix + "HLTDoubleMuonMatched"      + suffix );
+        produces <std::vector<double> > ( prefix + "HLTDoubleMuonMatchPt"      + suffix );
+        produces <std::vector<double> > ( prefix + "HLTDoubleMuonMatchEta"     + suffix );
+        produces <std::vector<double> > ( prefix + "HLTDoubleMuonMatchPhi"     + suffix );
 	//  HLT Single Iso Muon
 	produces <std::vector<bool  > > ( prefix + "HLTSingleIsoMuonMatched"   + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleIsoMuonMatchPt"   + suffix );
@@ -162,6 +179,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  eta                     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  phi                     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  pt                      ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  globaleta                     ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  globalphi                     ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  globalpt                      ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  globalE                      ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  muonspeceta                     ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  muonspecphi                     ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  muonspecpt                      ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  muonspecE                      ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  etaError                ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  phiError                ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptError                 ( new std::vector<double>()  );
@@ -175,6 +200,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  p                       ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energy                  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<int> >     charge                  ( new std::vector<int>()     );
+	std::auto_ptr<std::vector<int> >     globalcharge            ( new std::vector<int>()     );
+	std::auto_ptr<std::vector<int> >     trackercharge           ( new std::vector<int>()     );
+	std::auto_ptr<std::vector<int> >     muonspeccharge          ( new std::vector<int>()     );
 	std::auto_ptr<std::vector<int> >     trkHits                 ( new std::vector<int>()     );
 	std::auto_ptr<std::vector<int> >     trkHitsTrackerOnly      ( new std::vector<int>()     );
 	std::auto_ptr<std::vector<int> >     GlobaltrkValidHits      ( new std::vector<int>()     );
@@ -242,6 +270,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchPt     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchEta    ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchPhi    ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<bool  > >  HLTDoubleMuonMatched     ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchPt     ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchEta    ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  HLTDoubleMuonMatchPhi    ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<bool  > >  HLTSingleIsoMuonMatched  ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleIsoMuonMatchPt  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleIsoMuonMatchEta ( new std::vector<double>()  );
@@ -423,6 +455,24 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				HLTSingleMuonMatchPhi -> push_back ( -999. );
 			}
 
+			// HLT Double Muon trigger matching
+                        const pat::TriggerObjectRef doubleMuonTrigRef( matchHelper.triggerMatchObject( muons, iMuon,  doubleMuonTriggerMatch, iEvent, *triggerEvent ) );
+                        if ( doubleMuonTrigRef.isAvailable() && doubleMuonTrigRef.isNonnull() )
+			  {
+			    HLTDoubleMuonMatched  -> push_back ( true ) ;
+			    HLTDoubleMuonMatchPt  -> push_back ( doubleMuonTrigRef -> pt() );
+			    HLTDoubleMuonMatchEta -> push_back ( doubleMuonTrigRef -> eta());
+			    HLTDoubleMuonMatchPhi -> push_back ( doubleMuonTrigRef -> phi());
+			  }
+			else
+			  {
+			    HLTDoubleMuonMatched  -> push_back ( false ) ;
+			    HLTDoubleMuonMatchPt  -> push_back ( -999. );
+			    HLTDoubleMuonMatchEta -> push_back ( -999. );
+			    HLTDoubleMuonMatchPhi -> push_back ( -999. );
+			  }
+
+
 			// HLT Single Iso Muon trigger matching
 			const pat::TriggerObjectRef singleIsoMuonTrigRef( matchHelper.triggerMatchObject( muons, iMuon,  singleIsoMuonTriggerMatch, iEvent, *triggerEvent ) );
 			if ( singleIsoMuonTrigRef.isAvailable() && singleIsoMuonTrigRef.isNonnull() )
@@ -446,7 +496,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			p  ->push_back( it->p()   );
 
 			if( it->isGlobalMuon() )
-			{
+	 		{
+ 		                globaleta->push_back( it->globalTrack()->eta() );
+			        globalphi->push_back( it->globalTrack()->phi() );
+				globalpt ->push_back( it->globalTrack()->pt()  );
 				etaError    -> push_back ( it->globalTrack()->etaError()    );
 				phiError    -> push_back ( it->globalTrack()->phiError()    );
 				ptError     -> push_back ( it->globalTrack()->ptError ()    );
@@ -462,6 +515,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				ptError     -> push_back ( it->track()->ptError ()    );
 								 //track() returns innerTrack();
 				qoverpError -> push_back ( it->track()->qoverpError() );
+				
+				globaleta->push_back( it->track()->eta() );
+                                globalphi->push_back( it->track()->phi() );
+                                globalpt ->push_back( it->track()->pt()  );
+
 			}
 
 			trkPt  -> push_back ( it->track()->pt()  );
@@ -473,11 +531,27 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			trkPhiError -> push_back ( it->track()->phiError() );
 
 			charge            ->push_back( it->charge() );
+			trackercharge     ->push_back( it->track()->charge() );
+			
+			if(it->isStandAloneMuon()){
+                          muonspeccharge    ->push_back( it->standAloneMuon()->charge() );
+                          muonspeceta->push_back( it->standAloneMuon()->eta() );
+                          muonspecphi->push_back( it->standAloneMuon()->phi() );
+                          muonspecpt ->push_back( it->standAloneMuon()->pt()  );
+                        }
+                        else {
+			  muonspeccharge    ->push_back( -999.);
+			  muonspeceta->push_back( -999. );
+                          muonspecphi->push_back( -999. );
+                          muonspecpt ->push_back( -999. );
+			}
+			
 			trkHits           ->push_back( it->track()->numberOfValidHits() );
 			trkHitsTrackerOnly->push_back( it->track()->hitPattern().numberOfValidTrackerHits() );
 
 			if( it->isGlobalMuon() )
 			{
+			        globalcharge            ->push_back( it->globalTrack()->charge() );
 				GlobaltrkValidHits->push_back( it->globalTrack()->hitPattern().numberOfValidMuonHits()  );
 				pixelHits         ->push_back( it->globalTrack()->hitPattern().numberOfValidPixelHits() );
 				globalChi2        ->push_back( it->globalTrack()->normalizedChi2()                      );
@@ -490,6 +564,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				pixelHits         ->push_back( -1 );
 								 //inner track Chi squared is already stored at  "trackChi2".
 				globalChi2        ->push_back( -1 );
+				globalcharge            ->push_back(-999);
 			}
 
 			trkPixelHits->push_back(it->track()->hitPattern().numberOfValidPixelHits());
@@ -705,6 +780,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( eta,                        prefix + "Eta"                         + suffix );
 	iEvent.put( phi,                        prefix + "Phi"                         + suffix );
 	iEvent.put( pt,                         prefix + "Pt"                          + suffix );
+	iEvent.put( globaleta,                        prefix + "GlobalEta"                         + suffix );
+	iEvent.put( globalphi,                        prefix + "GlobalPhi"                         + suffix );
+        iEvent.put( globalpt,                         prefix + "GlobalPt"                          + suffix );
+        iEvent.put( globalE,                         prefix + "GlobalE"                          + suffix );
+        iEvent.put( muonspeceta,                        prefix + "MuonSpecEta"                         + suffix );
+	iEvent.put( muonspecphi,                        prefix + "MuonSpecPhi"                         + suffix );
+	iEvent.put( muonspecpt,                         prefix + "MuonSpecPt"                          + suffix );
+	iEvent.put( muonspecE,                          prefix + "MuonSpecE"                          + suffix );
 	iEvent.put( etaError,                   prefix + "EtaError"                    + suffix );
 	iEvent.put( phiError,                   prefix + "PhiError"                    + suffix );
 	iEvent.put( ptError,                    prefix + "PtError"                     + suffix );
@@ -718,6 +801,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( p,                          prefix + "P"                           + suffix );
 	iEvent.put( energy,                     prefix + "Energy"                      + suffix );
 	iEvent.put( charge,                     prefix + "Charge"                      + suffix );
+	iEvent.put( globalcharge,               prefix + "GlobalCharge"                + suffix );
+        iEvent.put( trackercharge,              prefix + "TrackerCharge"                + suffix );
+        iEvent.put( muonspeccharge,             prefix + "MuonSpecCharge"                + suffix );
 	iEvent.put( trkHits,                    prefix + "TrkHits"                     + suffix );
 	iEvent.put( trkHitsTrackerOnly,         prefix + "TrkHitsTrackerOnly"          + suffix );
 	iEvent.put( GlobaltrkValidHits,         prefix + "GlobalTrkValidHits"          + suffix );
@@ -808,6 +894,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( HLTSingleMuonMatchPt     , prefix + "HLTSingleMuonMatchPt"      + suffix );
 	iEvent.put( HLTSingleMuonMatchEta    , prefix + "HLTSingleMuonMatchEta"     + suffix );
 	iEvent.put( HLTSingleMuonMatchPhi    , prefix + "HLTSingleMuonMatchPhi"     + suffix );
+	iEvent.put( HLTDoubleMuonMatched     , prefix + "HLTDoubleMuonMatched"      + suffix );
+        iEvent.put( HLTDoubleMuonMatchPt     , prefix + "HLTDoubleMuonMatchPt"      + suffix );
+	iEvent.put( HLTDoubleMuonMatchEta    , prefix + "HLTDoubleMuonMatchEta"     + suffix );
+        iEvent.put( HLTDoubleMuonMatchPhi    , prefix + "HLTDoubleMuonMatchPhi"     + suffix );
+
 	iEvent.put( HLTSingleIsoMuonMatched  , prefix + "HLTSingleIsoMuonMatched"   + suffix );
 	iEvent.put( HLTSingleIsoMuonMatchPt  , prefix + "HLTSingleIsoMuonMatchPt"   + suffix );
 	iEvent.put( HLTSingleIsoMuonMatchEta , prefix + "HLTSingleIsoMuonMatchEta"  + suffix );
