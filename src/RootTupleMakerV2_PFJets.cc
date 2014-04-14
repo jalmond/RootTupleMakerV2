@@ -50,6 +50,10 @@ vtxInputTag(iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "L2L3ResJEC" + suffix );
 	produces <std::vector<double> > ( prefix + "L3AbsJEC" + suffix );
 	produces <std::vector<double> > ( prefix + "L2RelJEC" + suffix );
+	produces <std::vector<double> > ( prefix + "L5GluonJEC" + suffix );
+	produces <std::vector<double> > ( prefix + "L5UDSJEC" + suffix );
+	produces <std::vector<double> > ( prefix + "L5CharmJEC" + suffix );
+	produces <std::vector<double> > ( prefix + "L5BottomJEC" + suffix );
 	produces <std::vector<double> > ( prefix + "L1FastJetJEC" + suffix );
 	// produces <std::vector<double> > ( prefix + "L1OffsetJEC" + suffix );
 	produces <std::vector<int> >    ( prefix + "PartonFlavour" + suffix );
@@ -138,6 +142,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  l2l3resJEC_vec ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  l3absJEC_vec ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  l2relJEC_vec ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  l5gluonJEC_vec ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  l5udsJEC_vec ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  l5charmJEC_vec ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  l5bottomJEC_vec ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  l1fastjetJEC_vec ( new std::vector<double>()  );
 	// std::auto_ptr<std::vector<double> >  l1offsetJEC_vec ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<int> >     partonFlavour  ( new std::vector<int>()  );
@@ -576,6 +584,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			l3absJEC_vec->push_back( it->correctedJet("L3Absolute").pt()/it->correctedJet("L2Relative").pt() );
 			l2relJEC_vec->push_back( it->correctedJet("L2Relative").pt()/it->correctedJet("L1FastJet").pt() );
 			l1fastjetJEC_vec->push_back( it->correctedJet("L1FastJet").pt()/it->correctedJet("Uncorrected").pt() );
+
+			l5gluonJEC_vec->push_back( it->correctedJet("L5Flavor" ,"GLUON").pt() / it->pt() );
+			l5udsJEC_vec->push_back( it->correctedJet("L5Flavor" ,"UDS").pt() / it->pt() );
+			l5charmJEC_vec->push_back( it->correctedJet("L5Flavor" ,"CHARM").pt() / it->pt() );
+			l5bottomJEC_vec->push_back( it->correctedJet("L5Flavor" ,"BOTTOM").pt() / it->pt() );
+			
 			if(readJECuncertainty){ 
 			  double uncertainty = -999.;
 			  try { 
@@ -722,6 +736,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( l3absJEC_vec, prefix + "L3AbsJEC" + suffix );
 	iEvent.put( l2relJEC_vec, prefix + "L2RelJEC" + suffix );
 	iEvent.put( l1fastjetJEC_vec, prefix + "L1FastJetJEC" + suffix );
+	iEvent.put( l5gluonJEC_vec, prefix + "L5GluonJEC" + suffix );
+	iEvent.put( l5udsJEC_vec, prefix + "L5UDSJEC" + suffix );
+	iEvent.put( l5charmJEC_vec, prefix + "L5CharmJEC" + suffix );
+	iEvent.put( l5bottomJEC_vec, prefix + "L5BottomJEC" + suffix );
+
 	// iEvent.put( l1offsetJEC_vec, prefix + "L1OffsetJEC" + suffix );
 	iEvent.put( partonFlavour, prefix + "PartonFlavour" + suffix );
 	iEvent.put( chargedEmEnergyFraction,  prefix + "ChargedEmEnergyFraction"  + suffix );
