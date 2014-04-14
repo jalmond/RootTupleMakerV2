@@ -174,7 +174,7 @@ addJetCollection(process,cms.InputTag('ak5PFJets'),
 #----------------------------------------------------------------------------------------------------
 
 process.analysisPatJetsAK5PF = process.cleanPatJetsAK5PF.clone()
-process.analysisPatJetsAK5PF.finalCut = cms.string("abs(eta)<2.5 & pt > 20")
+process.analysisPatJetsAK5PF.finalCut = cms.string("abs(eta)<2.5 & pt > 10")
 process.patDefaultSequence.replace ( process.cleanPatJetsAK5PF, process.cleanPatJetsAK5PF + process.analysisPatJetsAK5PF )
 
 #----------------------------------------------------------------------------------------------------
