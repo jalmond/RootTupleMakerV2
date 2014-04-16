@@ -25,6 +25,11 @@ muonIso  (iConfig.getParameter<double>       ("MuonIso")),
 muonID   (iConfig.getParameter<std::string>  ("MuonID")),
 								 // trigger matching string
 singleMuonTriggerMatch(iConfig.getParameter<std::string>("SingleMuonTriggerMatch")),
+singleMuonTriggerMatch5(iConfig.getParameter<std::string>("SingleMuonTriggerMatch5")),
+singleMuonTriggerMatch8(iConfig.getParameter<std::string>("SingleMuonTriggerMatch8")),
+singleMuonTriggerMatch12(iConfig.getParameter<std::string>("SingleMuonTriggerMatch12")),
+singleMuonTriggerMatch17(iConfig.getParameter<std::string>("SingleMuonTriggerMatch17")),
+singleMuonTriggerMatch24(iConfig.getParameter<std::string>("SingleMuonTriggerMatch24")),
 doubleMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
 								 // trigger matching string
 singleIsoMuonTriggerMatch(iConfig.getParameter<std::string>("SingleIsoMuonTriggerMatch")),
@@ -127,6 +132,14 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchPt"      + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchEta"     + suffix );
 	produces <std::vector<double> > ( prefix + "HLTSingleMuonMatchPhi"     + suffix );
+
+	/// HLT single muon (for fake studies)
+	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched5"      + suffix );
+	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched8"      + suffix );
+	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched12"      + suffix );
+	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched17"      + suffix );
+	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched24"      + suffix );
+
 	//  HLT Double Muon 
 	produces <std::vector<bool  > > ( prefix + "HLTDoubleMuonMatched"      + suffix );
         produces <std::vector<double> > ( prefix + "HLTDoubleMuonMatchPt"      + suffix );
@@ -267,6 +280,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	//
 	// Trigger matching variables
 	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched     ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched5     ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched8     ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched12     ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched17    ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched24     ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchPt     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchEta    ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  HLTSingleMuonMatchPhi    ( new std::vector<double>()  );
@@ -455,6 +473,30 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				HLTSingleMuonMatchPhi -> push_back ( -999. );
 			}
 
+			// HLT Single Muon trigger matching                                                                                                
+                        const pat::TriggerObjectRef singleMuonTrigRef5( matchHelper.triggerMatchObject( muons, iMuon,  singleMuonTriggerMatch5, iEvent, *triggerEvent ) );
+                        if ( singleMuonTrigRef5.isAvailable() && singleMuonTrigRef5.isNonnull() ) HLTSingleMuonMatched5  -> push_back ( true ) ;
+                        else HLTSingleMuonMatched5  -> push_back ( false ) ;
+			
+			
+                        const pat::TriggerObjectRef singleMuonTrigRef8( matchHelper.triggerMatchObject( muons, iMuon,  singleMuonTriggerMatch8, iEvent, *triggerEvent ) );
+                        if ( singleMuonTrigRef8.isAvailable() && singleMuonTrigRef8.isNonnull() ) HLTSingleMuonMatched8  -> push_back ( true ) ;
+                        else HLTSingleMuonMatched8  -> push_back ( false ) ;
+			
+			const pat::TriggerObjectRef singleMuonTrigRef12( matchHelper.triggerMatchObject( muons, iMuon,  singleMuonTriggerMatch12, iEvent, *triggerEvent ) );
+                        if ( singleMuonTrigRef12.isAvailable() && singleMuonTrigRef12.isNonnull() ) HLTSingleMuonMatched12  -> push_back ( true ) ;
+                        else HLTSingleMuonMatched12  -> push_back ( false ) ;
+
+                        const pat::TriggerObjectRef singleMuonTrigRef17( matchHelper.triggerMatchObject( muons, iMuon,  singleMuonTriggerMatch17, iEvent, *triggerEvent ) );
+                        if ( singleMuonTrigRef17.isAvailable() && singleMuonTrigRef17.isNonnull() ) HLTSingleMuonMatched17  -> push_back ( true ) ;
+                        else HLTSingleMuonMatched17  -> push_back ( false ) ;
+
+
+                        const pat::TriggerObjectRef singleMuonTrigRef24( matchHelper.triggerMatchObject( muons, iMuon,  singleMuonTriggerMatch24, iEvent, *triggerEvent ) );
+                        if ( singleMuonTrigRef24.isAvailable() && singleMuonTrigRef24.isNonnull() ) HLTSingleMuonMatched24  -> push_back ( true ) ;
+                        else HLTSingleMuonMatched24  -> push_back ( false ) ;
+			
+			
 			// HLT Double Muon trigger matching
                         const pat::TriggerObjectRef doubleMuonTrigRef( matchHelper.triggerMatchObject( muons, iMuon,  doubleMuonTriggerMatch, iEvent, *triggerEvent ) );
                         if ( doubleMuonTrigRef.isAvailable() && doubleMuonTrigRef.isNonnull() )

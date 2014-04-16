@@ -52,7 +52,8 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   muonPt                   (iConfig.getParameter<double>       ("MuonPt"                   )),
   muonIso                  (iConfig.getParameter<double>       ("MuonIso"                  )),
   muonID                   (iConfig.getParameter<std::string>  ("MuonID"                   )),
-  singleEleTriggerMatch    (iConfig.getParameter<std::string>  ("SingleEleTriggerMatch"    )),
+  singleEleTriggerMatch8    (iConfig.getParameter<std::string>  ("SingleEleTriggerMatch8"    )),
+  singleEleTriggerMatch17    (iConfig.getParameter<std::string>  ("SingleEleTriggerMatch17"    )),
   singleEleTriggerMatchWP80(iConfig.getParameter<std::string>  ("SingleEleTriggerMatchWP80")),
   doubleEleTriggerMatch    (iConfig.getParameter<std::string>  ("DoubleEleTriggerMatch"    )),
   prefix                   (iConfig.getParameter<std::string>  ("Prefix"                   )),
@@ -197,10 +198,8 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
 
   // Trigger matching: Single electron
 
-  produces <std::vector<bool  > > ( prefix + "HLTSingleEleMatched"      + suffix );
-  produces <std::vector<double> > ( prefix + "HLTSingleEleMatchPt"      + suffix );
-  produces <std::vector<double> > ( prefix + "HLTSingleEleMatchEta"     + suffix );
-  produces <std::vector<double> > ( prefix + "HLTSingleEleMatchPhi"     + suffix );
+  produces <std::vector<bool  > > ( prefix + "HLTSingleEleMatched17"      + suffix );
+  produces <std::vector<bool  > > ( prefix + "HLTSingleEleMatched8"      + suffix );
 
   // Trigger matching: Single electron (WP80)
 
@@ -358,10 +357,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // Trigger matching: Single electron
 
-  std::auto_ptr<std::vector<bool  > >  HLTSingleEleMatched       ( new std::vector<bool  >()  );
-  std::auto_ptr<std::vector<double> >  HLTSingleEleMatchPt 	 ( new std::vector<double>()  );
-  std::auto_ptr<std::vector<double> >  HLTSingleEleMatchEta	 ( new std::vector<double>()  );
-  std::auto_ptr<std::vector<double> >  HLTSingleEleMatchPhi      ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<bool  > >  HLTSingleEleMatched8       ( new std::vector<bool  >()  );
+  std::auto_ptr<std::vector<bool  > >  HLTSingleEleMatched17       ( new std::vector<bool  >()  );
+
 
   // Trigger matching: Single electron (WP80)
 
@@ -555,17 +553,18 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       // Single electron
       
-      const pat::TriggerObjectRef singleElectronTrigRef( matchHelper.triggerMatchObject( electrons, iElectron,  singleEleTriggerMatch, iEvent, *triggerEvent ) );
-      if ( singleElectronTrigRef.isAvailable() && singleElectronTrigRef.isNonnull() ) { 
-	HLTSingleEleMatched  -> push_back ( true ) ;
-	HLTSingleEleMatchPt  -> push_back ( singleElectronTrigRef -> pt() );
-	HLTSingleEleMatchEta -> push_back ( singleElectronTrigRef -> eta());
-	HLTSingleEleMatchPhi -> push_back ( singleElectronTrigRef -> phi());
+      const pat::TriggerObjectRef singleElectronTrigRef8( matchHelper.triggerMatchObject( electrons, iElectron,  singleEleTriggerMatch8, iEvent, *triggerEvent ) );
+      if ( singleElectronTrigRef8.isAvailable() && singleElectronTrigRef8.isNonnull() ) { 
+	HLTSingleEleMatched8  -> push_back ( true ) ;
       } else { 
-	HLTSingleEleMatched  -> push_back ( false ) ;
-	HLTSingleEleMatchPt  -> push_back ( -999. );
-	HLTSingleEleMatchEta -> push_back ( -999. );
-	HLTSingleEleMatchPhi -> push_back ( -999. );
+	HLTSingleEleMatched8  -> push_back ( false ) ;
+      }
+
+      const pat::TriggerObjectRef singleElectronTrigRef17( matchHelper.triggerMatchObject( electrons, iElectron,  singleEleTriggerMatch17, iEvent, *triggerEvent ) );
+      if ( singleElectronTrigRef17.isAvailable() && singleElectronTrigRef17.isNonnull() ) {
+	HLTSingleEleMatched17  -> push_back ( true ) ;
+      } else {
+        HLTSingleEleMatched17  -> push_back ( false ) ;
       }
 
       // Single electron (WP80)

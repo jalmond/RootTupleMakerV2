@@ -17,7 +17,7 @@ class RootTupleMakerV2_Electrons : public edm::EDProducer {
   const std::vector <edm::InputTag> pfIsolation03InputTags, pfIsolation04InputTags;
   const double          electronIso, muonPt, muonIso;
   const std::string     muonID;
-  const std::string     singleEleTriggerMatch, singleEleTriggerMatchWP80, doubleEleTriggerMatch;
+  const std::string     singleEleTriggerMatch8,singleEleTriggerMatch17,  singleEleTriggerMatchWP80, doubleEleTriggerMatch;
   const std::string     prefix, suffix;
   const unsigned int    maxSize;
 

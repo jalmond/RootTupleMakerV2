@@ -37,17 +37,18 @@ rootTupleElectrons = cms.EDProducer("RootTupleMakerV2_Electrons",
                                     # They are not needed for EGamma PF isolation ( see above ) 
                                     # cms.InputTag("elPFIsoValueChargedAll04PFIdPFIso"), 
                                     # cms.InputTag("elPFIsoValuePU04PFIdPFIso")),
-    SingleEleTriggerMatch     = cms.string ("cleanElectronTriggerMatchHLTSingleElectron"),
+    SingleEleTriggerMatch8     = cms.string ("cleanElectronTriggerMatchHLTSingleElectron8"),
+    SingleEleTriggerMatch17     = cms.string ("cleanElectronTriggerMatchHLTSingleElectron17"),
     SingleEleTriggerMatchWP80 = cms.string ("cleanElectronTriggerMatchHLTSingleElectronWP80"),
     DoubleEleTriggerMatch     = cms.string ("cleanElectronTriggerMatchHLTDoubleElectron")
 )
 
-cleanElectronTriggerMatchHLTSingleElectron = cms.EDProducer(
+cleanElectronTriggerMatchHLTSingleElectron17 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
 , src     = cms.InputTag( 'cleanPatElectrons' )
 , matched = cms.InputTag( 'patTrigger' )          
 , matchedCuts = cms.string( 'type( "TriggerElectron" ) && path ( "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*" )' )
-, maxDeltaR = cms.double( 0.5 )
+, maxDeltaR = cms.double( 0.2 )
 , resolveAmbiguities    = cms.bool( True  )        # only one match per trigger object
 , resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)
 )
@@ -57,7 +58,7 @@ cleanElectronTriggerMatchHLTSingleElectronWP80 = cms.EDProducer(
 , src     = cms.InputTag( 'cleanPatElectrons' )
 , matched = cms.InputTag( 'patTrigger' )          
 , matchedCuts = cms.string( 'type( "TriggerElectron" ) && path( "HLT_Ele27_WP80_v*" )' )
-, maxDeltaR = cms.double( 0.5 )
+, maxDeltaR = cms.double( 0.2 )
 , resolveAmbiguities    = cms.bool( True  )        # only one match per trigger object
 , resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)
 )
@@ -67,9 +68,19 @@ cleanElectronTriggerMatchHLTDoubleElectron = cms.EDProducer(
 , src     = cms.InputTag( 'cleanPatElectrons' )
 , matched = cms.InputTag( 'patTrigger' )          
 , matchedCuts = cms.string( 'type( "TriggerElectron" ) && path( "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*" )' )
-, maxDeltaR = cms.double( 0.5 )
+, maxDeltaR = cms.double( 0.2 )
 , resolveAmbiguities    = cms.bool( True  )        # only one match per trigger object
 , resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)
+)
+
+cleanElectronTriggerMatchHLTSingleElectron8 = cms.EDProducer(
+  "PATTriggerMatcherDRLessByR"
+, src     = cms.InputTag( 'cleanPatElectrons' )
+, matched = cms.InputTag( 'patTrigger' )
+, matchedCuts = cms.string( 'type( "TriggerElectron" ) && path( "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*")' )
+, maxDeltaR = cms.double( 0.2 )
+, resolveAmbiguities    = cms.bool( True  )        # only one match per trigger object                                                                                  
+, resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)                                                   
 )
 
 # Extra trigger matching (for QCD estimate).  Leave commented for now.
