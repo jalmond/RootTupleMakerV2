@@ -933,6 +933,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	// trigger matching
 	iEvent.put( HLTSingleMuonMatched     , prefix + "HLTSingleMuonMatched"      + suffix );
+	iEvent.put( HLTSingleMuonMatched5     , prefix + "HLTSingleMuonMatched5"      + suffix );
+	iEvent.put( HLTSingleMuonMatched8     , prefix + "HLTSingleMuonMatched8"      + suffix );
+	iEvent.put( HLTSingleMuonMatched12     , prefix + "HLTSingleMuonMatched12"      + suffix );
+	iEvent.put( HLTSingleMuonMatched17     , prefix + "HLTSingleMuonMatched17"      + suffix );
+	iEvent.put( HLTSingleMuonMatched24     , prefix + "HLTSingleMuonMatched24"      + suffix );
+
 	iEvent.put( HLTSingleMuonMatchPt     , prefix + "HLTSingleMuonMatchPt"      + suffix );
 	iEvent.put( HLTSingleMuonMatchEta    , prefix + "HLTSingleMuonMatchEta"     + suffix );
 	iEvent.put( HLTSingleMuonMatchPhi    , prefix + "HLTSingleMuonMatchPhi"     + suffix );
