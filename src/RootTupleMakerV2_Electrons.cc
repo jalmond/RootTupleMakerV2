@@ -961,10 +961,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // Trigger matching: Single electron
 
-  iEvent.put( HLTSingleEleMatched     , prefix + "HLTSingleEleMatched"      + suffix );
-  iEvent.put( HLTSingleEleMatchPt     , prefix + "HLTSingleEleMatchPt"      + suffix );
-  iEvent.put( HLTSingleEleMatchEta    , prefix + "HLTSingleEleMatchEta"     + suffix );
-  iEvent.put( HLTSingleEleMatchPhi    , prefix + "HLTSingleEleMatchPhi"     + suffix );
+  iEvent.put( HLTSingleEleMatched8     , prefix + "HLTSingleEleMatched8"      + suffix );
+  iEvent.put( HLTSingleEleMatched17     , prefix + "HLTSingleEleMatched17"      + suffix );
+
 
   // Trigger matching: Single electron (WP80)
 
