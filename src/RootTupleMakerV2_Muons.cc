@@ -542,14 +542,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 			// ElectronMuon                                                                                                          
-			const pat::TriggerObjectRef ElectronMuonTrigRef8( matchHelper.triggerMatchObject( electrons, iElectron,  EMuTriggerMatch8, iEvent, *triggerEvent ) );
+			const pat::TriggerObjectRef ElectronMuonTrigRef8( matchHelper.triggerMatchObject( muons, iMuon,  EMuTriggerMatch8, iEvent, *triggerEvent ) );
 			if ( ElectronMuonTrigRef8.isAvailable() && ElectronMuonTrigRef8.isNonnull() ) {
 			  HLTEMuMatched8  -> push_back ( true ) ;
 			} else {
 			  HLTEMuMatched8  -> push_back ( false ) ;
 			}
 
-			const pat::TriggerObjectRef ElectronMuonTrigRef17( matchHelper.triggerMatchObject( electrons, iElectron,  EMuTriggerMatch17, iEvent, *triggerEvent ) );
+			const pat::TriggerObjectRef ElectronMuonTrigRef17( matchHelper.triggerMatchObject( muons, iMuon,  EMuTriggerMatch17, iEvent, *triggerEvent ) );
 			if ( ElectronMuonTrigRef17.isAvailable() && ElectronMuonTrigRef17.isNonnull() ) {
 			  HLTEMuMatched17  -> push_back ( true ) ;
 			} else {
@@ -977,7 +977,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( HLTSingleIsoMuonMatchPt  , prefix + "HLTSingleIsoMuonMatchPt"   + suffix );
 	iEvent.put( HLTSingleIsoMuonMatchEta , prefix + "HLTSingleIsoMuonMatchEta"  + suffix );
 	iEvent.put( HLTSingleIsoMuonMatchPhi , prefix + "HLTSingleIsoMuonMatchPhi"  + suffix );
-
+	
+	// Trigger matching: electron muon                                                                                                                                       
+	iEvent.put( HLTEMuMatched8     , prefix + "HLTEMuMatched8"      + suffix );
+	iEvent.put( HLTEMuMatched17     , prefix + "HLTEMuMatched17"      + suffix );
+	
 	iEvent.put( cosmicCompatibility,     prefix + "CosmicCompatibility"     + suffix );
 	iEvent.put( timeCompatibility,       prefix + "TimeCompatibility"       + suffix );
 	iEvent.put( backToBackCompatibility, prefix + "BackToBackCompatibility" + suffix );
