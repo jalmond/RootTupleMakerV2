@@ -31,6 +31,8 @@ singleMuonTriggerMatch12(iConfig.getParameter<std::string>("SingleMuonTriggerMat
 singleMuonTriggerMatch17(iConfig.getParameter<std::string>("SingleMuonTriggerMatch17")),
 singleMuonTriggerMatch24(iConfig.getParameter<std::string>("SingleMuonTriggerMatch24")),
 doubleMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
+EMuTriggerMatch8    (iConfig.getParameter<std::string>  ("EMuTriggerMatch8"    )),
+EMuTriggerMatch17    (iConfig.getParameter<std::string>  ("EMuTriggerMatch17"    )),
 								 // trigger matching string
 singleIsoMuonTriggerMatch(iConfig.getParameter<std::string>("SingleIsoMuonTriggerMatch")),
 beamSpotCorr      (iConfig.getParameter<bool>("BeamSpotCorr")),
@@ -139,6 +141,10 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched12"      + suffix );
 	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched17"      + suffix );
 	produces <std::vector<bool  > > ( prefix + "HLTSingleMuonMatched24"      + suffix );
+
+	// Trigger matching: Electron Muon                                                                                                                                    
+	produces <std::vector<bool  > > ( prefix + "HLTEMuMatched8"      + suffix );
+	produces <std::vector<bool  > > ( prefix + "HLTEMuMatched17"     + suffix );
 
 	//  HLT Double Muon 
 	produces <std::vector<bool  > > ( prefix + "HLTDoubleMuonMatched"      + suffix );
@@ -279,6 +285,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<int> >     trackLayersWithMeasurement ( new std::vector<int>()    );
 	//
 	// Trigger matching variables
+	std::auto_ptr<std::vector<bool  > >  HLTEMuMatched8       ( new std::vector<bool  >()  );
+	std::auto_ptr<std::vector<bool  > >  HLTEMuMatched17       ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched     ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched5     ( new std::vector<bool  >()  );
 	std::auto_ptr<std::vector<bool  > >  HLTSingleMuonMatched8     ( new std::vector<bool  >()  );
@@ -531,6 +539,24 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				HLTSingleIsoMuonMatchEta -> push_back ( -999. );
 				HLTSingleIsoMuonMatchPhi -> push_back ( -999. );
 			}
+
+
+			// ElectronMuon                                                                                                          
+			const pat::TriggerObjectRef ElectronMuonTrigRef8( matchHelper.triggerMatchObject( electrons, iElectron,  EMuTriggerMatch8, iEvent, *triggerEvent ) );
+			if ( ElectronMuonTrigRef8.isAvailable() && ElectronMuonTrigRef8.isNonnull() ) {
+			  HLTEMuMatched8  -> push_back ( true ) ;
+			} else {
+			  HLTEMuMatched8  -> push_back ( false ) ;
+			}
+
+			const pat::TriggerObjectRef ElectronMuonTrigRef17( matchHelper.triggerMatchObject( electrons, iElectron,  EMuTriggerMatch17, iEvent, *triggerEvent ) );
+			if ( ElectronMuonTrigRef17.isAvailable() && ElectronMuonTrigRef17.isNonnull() ) {
+			  HLTEMuMatched17  -> push_back ( true ) ;
+			} else {
+			  HLTEMuMatched17  -> push_back ( false ) ;
+			}
+
+
 
 			eta->push_back( it->eta() );
 			phi->push_back( it->phi() );

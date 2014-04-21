@@ -56,6 +56,8 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   singleEleTriggerMatch17    (iConfig.getParameter<std::string>  ("SingleEleTriggerMatch17"    )),
   singleEleTriggerMatchWP80(iConfig.getParameter<std::string>  ("SingleEleTriggerMatchWP80")),
   doubleEleTriggerMatch    (iConfig.getParameter<std::string>  ("DoubleEleTriggerMatch"    )),
+  EMuTriggerMatch8    (iConfig.getParameter<std::string>  ("EMuTriggerMatch8"    )),
+  EMuTriggerMatch17    (iConfig.getParameter<std::string>  ("EMuTriggerMatch17"    )),
   prefix                   (iConfig.getParameter<std::string>  ("Prefix"                   )),
   suffix                   (iConfig.getParameter<std::string>  ("Suffix"                   )),
   maxSize                  (iConfig.getParameter<unsigned int> ("MaxSize"                  ))
@@ -200,6 +202,13 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
 
   produces <std::vector<bool  > > ( prefix + "HLTSingleEleMatched17"      + suffix );
   produces <std::vector<bool  > > ( prefix + "HLTSingleEleMatched8"      + suffix );
+
+
+  // Trigger matching: Electron Muon
+  produces <std::vector<bool  > > ( prefix + "HLTEMuMatched8"      + suffix );
+  produces <std::vector<bool  > > ( prefix + "HLTEMuMatched17"     + suffix );
+
+
 
   // Trigger matching: Single electron (WP80)
 
@@ -359,6 +368,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   std::auto_ptr<std::vector<bool  > >  HLTSingleEleMatched8       ( new std::vector<bool  >()  );
   std::auto_ptr<std::vector<bool  > >  HLTSingleEleMatched17       ( new std::vector<bool  >()  );
+
+  std::auto_ptr<std::vector<bool  > >  HLTEMuMatched8       ( new std::vector<bool  >()  );
+  std::auto_ptr<std::vector<bool  > >  HLTEMuMatched17       ( new std::vector<bool  >()  );
+
 
 
   // Trigger matching: Single electron (WP80)
@@ -566,6 +579,23 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       } else {
         HLTSingleEleMatched17  -> push_back ( false ) ;
       }
+
+
+      // ElectronMuon     
+      const pat::TriggerObjectRef ElectronMuonTrigRef8( matchHelper.triggerMatchObject( electrons, iElectron,  EMuTriggerMatch8, iEvent, *triggerEvent ) );
+      if ( ElectronMuonTrigRef8.isAvailable() && ElectronMuonTrigRef8.isNonnull() ) {
+	HLTEMuMatched8  -> push_back ( true ) ;
+      } else {
+	HLTEMuMatched8  -> push_back ( false ) ;
+      }
+
+      const pat::TriggerObjectRef ElectronMuonTrigRef17( matchHelper.triggerMatchObject( electrons, iElectron,  EMuTriggerMatch17, iEvent, *triggerEvent ) );
+      if ( ElectronMuonTrigRef17.isAvailable() && ElectronMuonTrigRef17.isNonnull() ) {
+        HLTEMuMatched17  -> push_back ( true ) ;
+      } else {
+        HLTEMuMatched17  -> push_back ( false ) ;
+      }
+
 
       // Single electron (WP80)
       
@@ -964,6 +994,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put( HLTSingleEleMatched8     , prefix + "HLTSingleEleMatched8"      + suffix );
   iEvent.put( HLTSingleEleMatched17     , prefix + "HLTSingleEleMatched17"      + suffix );
 
+
+  // Trigger matching: electron muon                                                                         
+  iEvent.put( HLTEMuMatched8     , prefix + "HLTEMuMatched8"      + suffix );
+  iEvent.put( HLTEMuMatched17     , prefix + "HLTEMuMatched17"      + suffix );
 
   // Trigger matching: Single electron (WP80)
 

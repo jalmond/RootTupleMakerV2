@@ -18,7 +18,9 @@ rootTupleMuons = cms.EDProducer("RootTupleMakerV2_Muons",
     SingleMuonTriggerMatch24 = cms.string ("cleanMuonTriggerMatchHLTSingleMuon24"),
     SingleMuonTriggerMatch = cms.string ("cleanMuonTriggerMatchHLTSingleMuon"),
     DoubleMuonTriggerMatch = cms.string ("cleanMuonTriggerMatchHLTDoubleMuon"),
-    SingleIsoMuonTriggerMatch = cms.string ("cleanMuonTriggerMatchHLTSingleIsoMuon")
+    SingleIsoMuonTriggerMatch = cms.string ("cleanMuonTriggerMatchHLTSingleIsoMuon"),
+    EMuTriggerMatch8     = cms.string ("cleanElectronTriggerMatchHLTSingleElectronemu8"),
+    EMuTriggerMatch17     = cms.string ("cleanElectronTriggerMatchHLTSingleElectronemu17")
 )
 
 cleanMuonTriggerMatchHLTSingleMuon = cms.EDProducer(
@@ -105,3 +107,27 @@ cleanMuonTriggerMatchHLTDoubleMuon = cms.EDProducer(
 , resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)                                                           
 )
 
+
+cleanElectronTriggerMatchHLTSingleElectronemu8 = cms.EDProducer(
+  "PATTriggerMatcherDRLessByR"
+, src     = cms.InputTag( 'cleanPatMuons' )
+, matched = cms.InputTag( 'patTrigger' )
+, matchedCuts = cms.string( 'type( "TriggerMuon" ) && path( "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*")' )
+, maxDeltaR = cms.double( 0.1 )
+, resolveAmbiguities    = cms.bool( True  )        # only one match per trigger object                                                                           
+, resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)                          
+
+)
+
+
+cleanElectronTriggerMatchHLTSingleElectronemu17 = cms.EDProducer(
+  "PATTriggerMatcherDRLessByR"
+, src     = cms.InputTag( 'cleanPatMuons' )
+, matched = cms.InputTag( 'patTrigger' )
+  , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path( "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*")')
+, maxDeltaR = cms.double( 0.1 )
+, resolveAmbiguities    = cms.bool( True  )        # only one match per trigger object                                                  
+                                                                                                                                                                       
+, resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)                           
+                                                                                                                                                                       
+)
