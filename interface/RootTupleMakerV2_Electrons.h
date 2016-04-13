@@ -12,8 +12,8 @@ class RootTupleMakerV2_Electrons : public edm::EDProducer {
 
  private:
   void produce( edm::Event &, const edm::EventSetup & );
-  const edm::InputTag   trkInputTag, dcsInputTag, inputTag;
-  const edm::InputTag   vtxInputTag, beamSpotInputTag, conversionsInputTag, triggerEventInputTag, rhoInputTag;
+  const edm::InputTag   trkInputTag, dcsInputTag, inputTag, inputTagEnUp, inputTagEnDown,triggerEventInputTag;
+  const edm::InputTag   vtxInputTag, beamSpotInputTag, conversionsInputTag, rhoInputTag;
   const std::vector <edm::InputTag> pfIsolation03InputTags, pfIsolation04InputTags;
   const double          electronIso, muonPt, muonIso;
   const std::string     muonID;

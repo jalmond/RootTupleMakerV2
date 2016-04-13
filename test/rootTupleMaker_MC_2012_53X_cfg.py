@@ -40,12 +40,24 @@ process.TFileService = cms.Service("TFileService",
 process.GlobalTag.globaltag = 'START53_V27::All'
 
 # Events to process
-process.maxEvents.input = 10
+process.maxEvents.input = -1
+
+
+#process.readAK5PF    = cms.EDAnalyzer('JetCorrectorDBReader',  
+ #       # below is the communication to the database 
+#        payloadName    = cms.untracked.string('AK5PF'),
+#        # this is used ONLY for the name of the printed txt files. You can use any name that you like, 
+        # but it is recommended to use the GT name that you retrieved the files from.
+#        globalTag      = cms.untracked.string('START53_V27::All'),
+#        printScreen    = cms.untracked.bool(False),
+#        createTextFile = cms.untracked.bool(True)
+#                                      )
 
 # Input files
 process.source.fileNames = [
-    'root://eoscms//eos/cms/store/user/hsaka/2012prep/Summer12_DR53X_DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_PU_S10_START53_V7A-v1_TEST.root'
+    'file:/afs/cern.ch/work/j/jalmond/FE4C2F81-D0E1-E111-9080-0030487E0A2D.root'
 ]
+
 
 #----------------------------------------------------------------------------------------------------
 # HEEP 4.0 (electron ID) still uses the 2011 definitions of rho for isolation corrections.
@@ -221,6 +233,7 @@ addJetCollection(process,cms.InputTag('ak5PFJets'),
     doType1MET   = False, # Don't store Type1 PFMET information. This will be done by the runMEtUncertainties tool.
     jetIdLabel   = "ak5",# Which jet ID label should be used?
     jetCorrLabel = ('AK5PF', ['L1FastJet', 'L2Relative', 'L3Absolute', 'L5Flavor']), # Which jet corrections should be used?
+    #jetCorrLabel = ('AK5PF', ['L1FastJet', 'L2Relative',  'L3Absolute']), # Which jet corrections should be used?
     genJetCollection = cms.InputTag("ak5GenJets") # Which GEN jets should be used?
 )
 
@@ -390,6 +403,7 @@ process.rootTuplePFJets.InputTagSmearedDown = cms.InputTag('smearedAnalysisPatJe
 process.rootTuplePFJets.InputTagScaledUp    = cms.InputTag('shiftedAnalysisPatJetsAK5PFenUpForCorrMEt')                                 
 process.rootTuplePFJets.InputTagScaledDown  = cms.InputTag('shiftedAnalysisPatJetsAK5PFenDownForCorrMEt')     
 
+
 #----------------------------------------------------------------------------------------------------
 # Set Lepton-Gen Matching Parameters
 #----------------------------------------------------------------------------------------------------
@@ -416,13 +430,13 @@ process.LJFilter.muLabel   = cms.InputTag("cleanPatMuons")
 process.LJFilter.elecLabel = cms.InputTag("cleanPatElectrons")
 process.LJFilter.jetLabel  = cms.InputTag("smearedAnalysisPatJetsAK5PF")
 process.LJFilter.muonsMin = 0
-process.LJFilter.muPT     = 10.0
+process.LJFilter.muPT     = 1.0
 process.LJFilter.electronsMin = 0
-process.LJFilter.elecPT       = 15.0
+process.LJFilter.elecPT       = 1.0
 process.LJFilter.tausMin = 0
-process.LJFilter.tauPT   = 15.0
+process.LJFilter.tauPT   = 1.0
 process.LJFilter.jetsMin = 0
-process.LJFilter.jetPT   = 15.0
+process.LJFilter.jetPT   = 1.0
 process.LJFilter.counteitherleptontype = True
 process.LJFilter.customfilterEMuTauJet2012 = True
 # -- WARNING :
@@ -439,13 +453,16 @@ process.pdfWeights = cms.EDProducer("PdfWeightProducer",
 	# so only two more PDF sets can be added in PdfSetNames if not "")
 	#FixPOWHEG = cms.untracked.string("CT10.LHgrid"),
         # GenTag = cms.untracked.InputTag("genParticles"),
+        useFirstAsDefault = cms.untracked.bool(True),
 	PdfInfoTag = cms.untracked.InputTag("generator"),
 	PdfSetNames = cms.untracked.vstring(
-            "CT10.LHgrid" , 
+           "CT10.LHgrid",
             "MSTW2008nlo68cl.LHgrid",
-            "NNPDF20_100.LHgrid"
+           "NNPDF20_100.LHgrid"
 	)
 )
+
+
 
 #----------------------------------------------------------------------------------------------------
 # Define the output tree for RootTupleMakerV2
@@ -519,7 +536,8 @@ process.load ('Leptoquarks.LeptonJetGenTools.genTauMuElFromWs_cfi')
 #----------------------------------------------------------------------------------------------------
 
 process.p = cms.Path(
-    # gen particle skimmer modules
+    # gen particle skimmer modules#
+#    process.readAK5PF*
     process.genTausFromWs*
     process.genMuonsFromWs*
     process.genElectronsFromWs*
@@ -528,7 +546,7 @@ process.p = cms.Path(
     process.genElectronsFromZs*
     # pdf weights
     process.pdfWeights*
-    # HEEP electron ID
+    ## HEEP electron ID
     process.HEEPId*
     # MVA electron ID
     process.mvaID*
@@ -558,7 +576,7 @@ process.p = cms.Path(
     process.patType1CorrectedPFMetType1Only*
     process.patType1CorrectedPFMetType01Only*
     # L+J Filter
-    process.LJFilter*  
+#    process.LJFilter*  
     # Run PAT conversions for electrons
     process.patConversions*
     # Re-run full HPS sequence to fully profit from the fix of high pT taus
@@ -598,7 +616,7 @@ process.p = cms.Path(
     process.rootTuplePFMETType01XYCorJetResDown+
     process.rootTuplePFMETType01XYCorJetEnUp+
     process.rootTuplePFMETType01XYCorJetEnDown+
-    # Trigger objects
+    ## Trigger objects
     process.rootTupleTrigger+
     process.rootTupleTriggerObjects+
     # GEN objects

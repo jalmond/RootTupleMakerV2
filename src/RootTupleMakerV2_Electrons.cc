@@ -41,10 +41,12 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   trkInputTag              (iConfig.getParameter<edm::InputTag>("TracksInputTag"           )),
   dcsInputTag              (iConfig.getParameter<edm::InputTag>("DCSInputTag"              )),
   inputTag                 (iConfig.getParameter<edm::InputTag>("InputTag"                 )),
+  inputTagEnUp                 (iConfig.getParameter<edm::InputTag>("InputTagEnUp"                 )),
+  inputTagEnDown                 (iConfig.getParameter<edm::InputTag>("InputTagEnDown"                 )),
+  triggerEventInputTag     (iConfig.getParameter<edm::InputTag>("TriggerEventInputTag"     )),
   vtxInputTag              (iConfig.getParameter<edm::InputTag>("VertexInputTag"           )), 
   beamSpotInputTag         (iConfig.getParameter<edm::InputTag>("BeamSpotInputTag"         )),
   conversionsInputTag      (iConfig.getParameter<edm::InputTag>("ConversionsInputTag"      )),
-  triggerEventInputTag     (iConfig.getParameter<edm::InputTag>("TriggerEventInputTag"     )),
   rhoInputTag              (iConfig.getParameter<edm::InputTag>("RhoInputTag"              )),
   pfIsolation03InputTags   (iConfig.getParameter<std::vector<edm::InputTag> >("PFIsolationValues03")),
   pfIsolation04InputTags   (iConfig.getParameter<std::vector<edm::InputTag> >("PFIsolationValues04")),
@@ -182,6 +184,9 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   produces <std::vector<double> > ( prefix + "PrimaryVertexDXYError"    + suffix );
   produces <std::vector<double> > ( prefix + "BeamSpotDXY"              + suffix );
   produces <std::vector<double> > ( prefix + "BeamSpotDXYError"         + suffix );
+
+  produces <std::vector<double> > ( prefix + "shiftedEup"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedEdown"                    + suffix );
 
   // Track information
 
@@ -349,6 +354,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::auto_ptr<std::vector<double> >  beamspotDXY               ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  beamspotDXYError          ( new std::vector<double>()  );
 
+  //shiftedEup
+  std::auto_ptr<std::vector<double> >  shiftedEup                ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedEdown              ( new std::vector<double>()  );
+  
   // Track information 
 
   std::auto_ptr<std::vector<double> >  trackVx                   ( new std::vector<double>()  );
@@ -433,6 +442,17 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<std::vector<pat::Electron> > electrons;
   iEvent.getByLabel(inputTag, electrons);
 
+  //edm::Handle<std::vector<pat::Electron> > anal_electrons;
+  //iEvent.getByLabel("analysisPatElectrons", anal_electrons);
+
+
+  edm::Handle<edm::View<pat::Electron> > shiftedEnDownSrc;
+  edm::Handle<edm::View<pat::Electron> > shiftedEnUpSrc;
+
+  iEvent.getByLabel(inputTagEnDown, shiftedEnDownSrc);
+  iEvent.getByLabel(inputTagEnUp, shiftedEnUpSrc);
+  
+
   // PAT trigger event
 
   edm::Handle< pat::TriggerEvent > triggerEvent;
@@ -490,7 +510,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     edm::LogInfo("RootTupleMakerV2_ElectronsInfo") << "Total # Electrons: " << electrons->size();
 
     size_t iElectron = 0;
-
+    int iEl=0;
     for( std::vector<pat::Electron>::const_iterator it = electrons->begin(); it != electrons->end(); ++it ) {
 
       //------------------------------------------------------------------------
@@ -628,6 +648,20 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	    genPartPhi=it->genParticle(igen)->phi();
 	  }
 	}
+	
+	for(unsigned int i_el=0; i_el < shiftedEnUpSrc->size(); i_el++){
+	  if(fabs(it->eta() - shiftedEnUpSrc->at(i_el).eta()) < 0.1){
+	    if(fabs(it->phi() - shiftedEnUpSrc->at(i_el).phi()) < 0.1){
+	      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
+	      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
+	    }
+	  }
+	}
+      }
+      else{
+	
+        shiftedEup                -> push_back ( 0.);
+        shiftedEdown               -> push_back ( 0.);
       }
       
       matchedGenParticlePt  -> push_back ( (double)(genPartPt ) );
@@ -732,6 +766,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       charge                   -> push_back ( it->charge() );
       hoe                      -> push_back ( it->hadronicOverEm() );
       
+
+      
       // Supercluster kinematic variables
 
       scEta                    -> push_back( it->superCluster()->eta() );
@@ -745,10 +781,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       mvatrigV0                -> push_back(mva_trigV0);
       mvaNontrigV0             -> push_back(mva_NontrigV0);
       passIds                  -> push_back( passId );
-      passEGammaIDVeto         -> push_back (EgammaCutBasedEleId::TestWP(EgammaCutBasedEleId::VETO  , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso));
-      passEGammaIDLoose        -> push_back (EgammaCutBasedEleId::TestWP(EgammaCutBasedEleId::LOOSE , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso));
-      passEGammaIDMedium       -> push_back (EgammaCutBasedEleId::TestWP(EgammaCutBasedEleId::MEDIUM, *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso));
-      passEGammaIDTight        -> push_back (EgammaCutBasedEleId::TestWP(EgammaCutBasedEleId::TIGHT , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso));
+      passEGammaIDVeto         -> push_back (EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO  , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso,ElectronEffectiveArea::kEleEAData2012));
+      passEGammaIDLoose        -> push_back (EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso,ElectronEffectiveArea::kEleEAData2012));
+      passEGammaIDMedium       -> push_back (EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso,ElectronEffectiveArea::kEleEAData2012));
+      passEGammaIDTight        -> push_back (EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT , *it, hConversions, (*bsHandle), primaryVertices, it->chargedHadronIso(), it->photonIso(), it->neutralHadronIso(), rhoIso,ElectronEffectiveArea::kEleEAData2012));
       passEGammaIDTrigTight    -> push_back (EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, *it));
       passEGammaIDTrigWP70     -> push_back (EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERWP70 , *it));
       passEGammaIDEoP          -> push_back (EgammaCutBasedEleId::PassEoverPCuts(*it));
@@ -842,7 +878,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       beamspotDXYError         -> push_back( fabs( it->edB(pat::Electron::BS2D) ) );
 			       
       // Track information     
-      			       
+      
+      
       trackVx                  -> push_back( it->gsfTrack()->vx() );
       trackVy                  -> push_back( it->gsfTrack()->vy() );
       trackVz                  -> push_back( it->gsfTrack()->vz() );
@@ -851,6 +888,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
       ++iElectron;
+      ++iEl;
     }
   } else {
     edm::LogError("RootTupleMakerV2_ElectronsError") << "Error! Can't get the product " << inputTag;
@@ -973,6 +1011,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put( primaryVertexDXYError   , prefix + "PrimaryVertexDXYError"    + suffix );
   iEvent.put( beamspotDXY             , prefix + "BeamSpotDXY"              + suffix );
   iEvent.put( beamspotDXYError        , prefix + "BeamSpotDXYError"         + suffix );
+
+  
+  // Energy shift
+  iEvent.put( shiftedEup                 , prefix + "shiftedEup"                  + suffix );
+  iEvent.put( shiftedEdown               , prefix + "shiftedEdown"                  + suffix );
+
 
   // Track information
 

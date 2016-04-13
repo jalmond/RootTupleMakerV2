@@ -168,7 +168,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double fraction = 1.;
     reco::TrackBase::TrackQuality trackQuality = reco::TrackBase::qualityByName("highPurity");
 
-    if( tracks->size() > numTracks ){
+    if( tracks->size() >= numTracks ){
       for( reco::TrackCollection::const_iterator it=tracks->begin(); it!=tracks->end(); ++it ) {
         if( it->quality(trackQuality) ) numhighpurity++;
       }

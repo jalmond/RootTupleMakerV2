@@ -17,14 +17,16 @@ class RootTupleMakerV2_PhysicsDSTStream2011 : public edm::EDProducer {
 
   HLTConfigProvider hltConfig;
 
+  const std::string           suffix;
+  const bool                  storeEventInfo;
   const edm::InputTag         hltInputTag;
   const edm::InputTag         inputTagHLTPFJets, inputTagHLTCaloJetsRaw, inputTagHLTCaloJetsCorr, inputTagHLTPixelVertices;
-  const std::string           suffix;
+
   const std::string           prefixHLTPFJets, prefixHLTCaloJetsRaw, prefixHLTCaloJetsCorr, prefixHLTPixelVertices;
   const double                minPtHLTPFJets, maxEtaHLTPFJets;
   const double                minPtHLTCaloJetsRaw, maxEtaHLTCaloJetsRaw;
   const double                minPtHLTCaloJetsCorr, maxEtaHLTCaloJetsCorr;  
-  const bool                  storeEventInfo;
+
 
 };
 

@@ -9,7 +9,7 @@ import FWCore.ParameterSet.Config as cms
 # CSC beam halo filter: 
 # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFilters#CSC_Beam_Halo_Filter
 # ------------------------------------------------------------------------------------
-from RecoMET.METAnalyzers.CSCHaloFilter_cfi import *
+from RecoMET.METFilters.CSCTightHaloFilter_cfi import *
 
 # ------------------------------------------------------------------------------------
 # HBHE noise filter:

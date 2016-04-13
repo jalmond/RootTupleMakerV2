@@ -1,16 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
 rootTuplePFJets = cms.EDProducer("RootTupleMakerV2_PFJets",
-    InputTag = cms.InputTag('selectedPatJetsAK5PF'),
+    InputTag = cms.InputTag('selectedPatJetsAK5PFchs'),
     # InputTagL1Offset    = cms.InputTag('selectedPatJetsAK5PFL1Offset'),
-    InputTagSmearedUp   = cms.InputTag('smearedPatJetsAK5PFresUp'),                                 
-    InputTagSmearedDown = cms.InputTag('smearedPatJetsAK5PFresDown'),                                 
-    InputTagScaledUp    = cms.InputTag('shiftedPatJetsAK5PFenUpForCorrMEt'),                                 
-    InputTagScaledDown  = cms.InputTag('shiftedPatJetsAK5PFenDownForCorrMEt'),                                 
+    InputTagSmearedUp   = cms.InputTag('smearedPatJetsAK5PFchsResUp'),                                 
+    InputTagSmearedDown = cms.InputTag('smearedPatJetsAK5PFchsResDown'),                                 
+    InputTagScaledUp    = cms.InputTag('shiftedPatJetsAK5PFchsEnUpForCorrMEt'),                                 
+    InputTagScaledDown  = cms.InputTag('shiftedPatJetsAK5PFchsEnDownForCorrMEt'),                                 
     Prefix = cms.string('PFJet'),
     Suffix = cms.string(''),
     MaxSize = cms.uint32(30),
-    JECUncertainty = cms.string('AK5PF'),
+    JECUncertainty = cms.string('AK5PFchs'),
     ReadJECuncertainty = cms.bool(True),
     VertexInputTag = cms.InputTag('offlinePrimaryVertices')
 )

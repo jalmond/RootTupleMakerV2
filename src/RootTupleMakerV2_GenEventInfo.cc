@@ -52,6 +52,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 //   *alphaQED.get() = 0.;
 
   //-----------------------------------------------------------------
+
   if( !iEvent.isRealData() ) {
     // GenEventInfo Part
     edm::Handle<GenEventInfoProduct> genEvtInfoProduct;
@@ -63,7 +64,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       *processID.get() = genEvtInfoProduct->signalProcessID();
       *ptHat.get() = ( genEvtInfoProduct->hasBinningValues() ? genEvtInfoProduct->binningValues()[0] : 0. );
       *weight.get() = genEvtInfoProduct->weight();
-//       *alphaQCD.get() = genEvtInfoProduct->alphaQCD();
+      //       *alphaQCD.get() = genEvtInfoProduct->alphaQCD();
 //       *alphaQED.get() = genEvtInfoProduct->alphaQED();
 
     } else {

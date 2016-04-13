@@ -16,6 +16,8 @@
 RootTupleMakerV2_Muons::RootTupleMakerV2_Muons(const edm::ParameterSet& iConfig) :
 inputTag (iConfig.getParameter<edm::InputTag>("InputTag")),
 triggerEventInputTag     (iConfig.getParameter<edm::InputTag>("TriggerEventInputTag"     )),
+inputTagEnUp                 (iConfig.getParameter<edm::InputTag>("InputTagEnUp"                 )),
+inputTagEnDown                 (iConfig.getParameter<edm::InputTag>("InputTagEnDown"                 )),
 prefix   (iConfig.getParameter<std::string>  ("Prefix")),
 suffix   (iConfig.getParameter<std::string>  ("Suffix")),
 maxSize  (iConfig.getParameter<unsigned int> ("MaxSize")),
@@ -25,16 +27,17 @@ muonIso  (iConfig.getParameter<double>       ("MuonIso")),
 muonID   (iConfig.getParameter<std::string>  ("MuonID")),
 								 // trigger matching string
 singleMuonTriggerMatch(iConfig.getParameter<std::string>("SingleMuonTriggerMatch")),
+singleIsoMuonTriggerMatch(iConfig.getParameter<std::string>("SingleIsoMuonTriggerMatch")),
+doubleMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
 singleMuonTriggerMatch5(iConfig.getParameter<std::string>("SingleMuonTriggerMatch5")),
 singleMuonTriggerMatch8(iConfig.getParameter<std::string>("SingleMuonTriggerMatch8")),
 singleMuonTriggerMatch12(iConfig.getParameter<std::string>("SingleMuonTriggerMatch12")),
 singleMuonTriggerMatch17(iConfig.getParameter<std::string>("SingleMuonTriggerMatch17")),
 singleMuonTriggerMatch24(iConfig.getParameter<std::string>("SingleMuonTriggerMatch24")),
-doubleMuonTriggerMatch(iConfig.getParameter<std::string>("DoubleMuonTriggerMatch")),
 EMuTriggerMatch8    (iConfig.getParameter<std::string>  ("EMuTriggerMatch8"    )),
 EMuTriggerMatch17    (iConfig.getParameter<std::string>  ("EMuTriggerMatch17"    )),
 								 // trigger matching string
-singleIsoMuonTriggerMatch(iConfig.getParameter<std::string>("SingleIsoMuonTriggerMatch")),
+
 beamSpotCorr      (iConfig.getParameter<bool>("BeamSpotCorr")),
 useCocktailRefits (iConfig.getParameter<bool>("UseCocktailRefits")),
 								 // collection of primary vertices to be used.
@@ -122,6 +125,9 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "MatchedGenParticlePt"    + suffix );
 	produces <std::vector<double> > ( prefix + "MatchedGenParticleEta"   + suffix );
 	produces <std::vector<double> > ( prefix + "MatchedGenParticlePhi"   + suffix );
+
+	produces <std::vector<double> > ( prefix + "shiftedEup"                    + suffix );
+	produces <std::vector<double> > ( prefix + "shiftedEdown"                    + suffix );
 	//
 	// New variables added based on CMSSW 52X recommendations for LooseMuon and TightMuon Definitions
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Basline_muon_selections_for_2012
@@ -247,6 +253,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  hoIso                   ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ecalVetoIso             ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  hcalVetoIso             ( new std::vector<double>()  );
+
+	//shiftedEup                                                                                                                                                                                                                                            
+	std::auto_ptr<std::vector<double> >  shiftedEup                ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  shiftedEdown              ( new std::vector<double>()  );
+
 	//
 	std::auto_ptr<std::vector<double> >  pfisor03chargedhadron   ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  pfisor03chargedparticle ( new std::vector<double>()  );
@@ -338,6 +349,15 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<std::vector<pat::Muon> > muons;
 	iEvent.getByLabel(inputTag, muons);
 
+
+
+	edm::Handle<edm::View<pat::Muon> > shiftedEnDownSrc;
+	edm::Handle<edm::View<pat::Muon> > shiftedEnUpSrc;
+
+	iEvent.getByLabel(inputTagEnDown, shiftedEnDownSrc);
+	iEvent.getByLabel(inputTagEnUp, shiftedEnUpSrc);
+
+
 	edm::Handle<reco::VertexCollection> primaryVertices;
 	iEvent.getByLabel(vtxInputTag,primaryVertices);
 
@@ -357,10 +377,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		edm::LogInfo("RootTupleMakerV2_MuonsInfo") << "Total # Muons: " << muons->size();
 
 		size_t iMuon = 0;
-
+		int imu=0;
 		for( std::vector<pat::Muon>::const_iterator it = muons->begin(); it != muons->end(); ++it )
 		{
-			// exit from loop when you reach the required number of muons
+
+		  imu++;
+		  // exit from loop when you reach the required number of muons
 			if(eta->size() >= maxSize)
 				break;
 
@@ -384,6 +406,19 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 					genparEta=it->genParticle(igen)->eta();
 					genparPhi=it->genParticle(igen)->phi();
 				}
+				
+				for(unsigned int i_el=0; i_el < shiftedEnUpSrc->size(); i_el++){
+				  if(fabs(it->eta() - shiftedEnUpSrc->at(i_el).eta()) < 0.1){
+				    if(fabs(it->phi() - shiftedEnUpSrc->at(i_el).phi()) < 0.1){
+				      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
+				      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
+				    }   
+				  }
+				}
+			}
+			else {
+			  shiftedEup                -> push_back ( 0.);
+			  shiftedEdown               -> push_back ( 0.);
 			}
 			matchedgenparticlept     -> push_back ( (double)(genparPt) );
 			matchedgenparticleeta    -> push_back ( (double)(genparEta) );
@@ -835,6 +870,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 			iMuon++;
 
+
 		}						 //end of loop over muons
 	}
 	else
@@ -928,6 +964,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( matchedgenparticlephi,      prefix + "MatchedGenParticlePhi"       + suffix );
 	iEvent.put( isPF,                       prefix + "IsPF"                        + suffix );
 	iEvent.put( trackLayersWithMeasurement, prefix + "TrackLayersWithMeasurement"  + suffix );
+
+	// Energy shift                                                                                                                                                                                                                                         
+	iEvent.put( shiftedEup                 , prefix + "shiftedEup"                  + suffix );
+	iEvent.put( shiftedEdown               , prefix + "shiftedEdown"                  + suffix );
 	//
 
 	if ( useCocktailRefits )

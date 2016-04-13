@@ -11,7 +11,7 @@ class RootTupleMakerV2_Muons : public edm::EDProducer {
 
  private:
   void produce( edm::Event &, const edm::EventSetup & );
-  const edm::InputTag   inputTag, triggerEventInputTag;
+  const edm::InputTag   inputTag, triggerEventInputTag, inputTagEnUp, inputTagEnDown;
   const std::string     prefix,suffix;
   const unsigned int    maxSize;
   const double          muonIso;

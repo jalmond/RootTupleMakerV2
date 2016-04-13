@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 rootTupleMuons = cms.EDProducer("RootTupleMakerV2_Muons",
     InputTag = cms.InputTag('cleanPatMuons'),
+    InputTagEnUp = cms.InputTag('shiftedAnalysisPatMuonsEnUp'),
+    InputTagEnDown = cms.InputTag('shiftedAnalysisPatMuonsEnDown'),
     TriggerEventInputTag = cms.InputTag ('patTriggerEvent'),                                
     Prefix = cms.string('Muon'),
     Suffix = cms.string(''),
