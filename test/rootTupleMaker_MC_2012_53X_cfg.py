@@ -43,16 +43,6 @@ process.GlobalTag.globaltag = 'START53_V27::All'
 process.maxEvents.input = -1
 
 
-#process.readAK5PF    = cms.EDAnalyzer('JetCorrectorDBReader',  
- #       # below is the communication to the database 
-#        payloadName    = cms.untracked.string('AK5PF'),
-#        # this is used ONLY for the name of the printed txt files. You can use any name that you like, 
-        # but it is recommended to use the GT name that you retrieved the files from.
-#        globalTag      = cms.untracked.string('START53_V27::All'),
-#        printScreen    = cms.untracked.bool(False),
-#        createTextFile = cms.untracked.bool(True)
-#                                      )
-
 # Input files
 process.source.fileNames = [
     'file:/afs/cern.ch/work/j/jalmond/FE4C2F81-D0E1-E111-9080-0030487E0A2D.root'
@@ -187,7 +177,7 @@ process.cleanPatCandidates.replace ( process.cleanPatMuons, process.cleanPatMuon
 #----------------------------------------------------------------------------------------------------
 
 process.analysisPatElectrons = process.cleanPatElectrons.clone()
-process.analysisPatElectrons.finalCut = cms.string('userInt("HEEPId") < 0.5')
+process.analysisPatElectrons.finalCut = cms.string("pt > 20")
 
 process.cleanPatCandidates.replace ( process.cleanPatElectrons, process.cleanPatElectrons + process.analysisPatElectrons )
 
@@ -537,7 +527,6 @@ process.load ('Leptoquarks.LeptonJetGenTools.genTauMuElFromWs_cfi')
 
 process.p = cms.Path(
     # gen particle skimmer modules#
-#    process.readAK5PF*
     process.genTausFromWs*
     process.genMuonsFromWs*
     process.genElectronsFromWs*
@@ -576,7 +565,7 @@ process.p = cms.Path(
     process.patType1CorrectedPFMetType1Only*
     process.patType1CorrectedPFMetType01Only*
     # L+J Filter
-#    process.LJFilter*  
+    process.LJFilter*  
     # Run PAT conversions for electrons
     process.patConversions*
     # Re-run full HPS sequence to fully profit from the fix of high pT taus

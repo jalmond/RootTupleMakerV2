@@ -406,15 +406,21 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 					genparEta=it->genParticle(igen)->eta();
 					genparPhi=it->genParticle(igen)->phi();
 				}
-				
+				bool no_match=true;
 				for(unsigned int i_el=0; i_el < shiftedEnUpSrc->size(); i_el++){
 				  if(fabs(it->eta() - shiftedEnUpSrc->at(i_el).eta()) < 0.1){
 				    if(fabs(it->phi() - shiftedEnUpSrc->at(i_el).phi()) < 0.1){
+				      no_match=false;
 				      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
 				      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
 				    }   
 				  }
 				}
+				if(no_match){
+				  shiftedEup                -> push_back ( it->pt());
+				  shiftedEdown               -> push_back (it->pt());
+				}
+
 			}
 			else {
 			  shiftedEup                -> push_back ( 0.);
