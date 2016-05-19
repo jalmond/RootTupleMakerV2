@@ -380,7 +380,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		int imu=0;
 		for( std::vector<pat::Muon>::const_iterator it = muons->begin(); it != muons->end(); ++it )
 		{
-
+		  
+		  if(it->pt() > 20) std::cout << "Muon eta = "<< it->eta() <<  " phi = " << it->phi() << " pt="  << it->pt()<< std::endl;
 		  imu++;
 		  // exit from loop when you reach the required number of muons
 			if(eta->size() >= maxSize)

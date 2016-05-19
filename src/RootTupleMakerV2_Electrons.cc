@@ -518,6 +518,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       //------------------------------------------------------------------------
 
       if(eta->size() >= maxSize) break;
+      if(it->pt() > 20) std::cout << "Electron eta = "<< it->eta() <<  " phi = " << it->phi() << " pt="  << it->pt()<< std::endl;
+
 
       //------------------------------------------------------------------------
       // Do any of these electrons overlap with muons?

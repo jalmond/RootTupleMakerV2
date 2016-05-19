@@ -7,7 +7,11 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 # Load PF isolation for muons and electrons
 from PhysicsTools.PatAlgos.tools.pfTools import *
-usePFIso ( process )
+#usePFIso ( process )
+
+inputJetCorrLabel = ('AK5PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'])
+
+
 
 # Options and Output Report
 process.options.wantSummary = False
@@ -30,7 +34,13 @@ process.load('Leptoquarks.RootTupleMakerV2.Ntuple_cff')
 # Output ROOT file
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string( "file.root" )
+
 )
+
+process.source = cms.Source ("PoolSource",
+                             fileNames=cms.untracked.vstring('file:/afs/cern.ch/work/j/jalmond/FE4C2F81-D0E1-E111-9080-0030487E0A2D.root'      ),
+                             skipEvents=cms.untracked.uint32(1108)
+                             )
 
 #----------------------------------------------------------------------------------------------------
 # Set global settings (number of events, global tag, input files, etc)
@@ -39,24 +49,20 @@ process.TFileService = cms.Service("TFileService",
 # GlobalTag
 process.GlobalTag.globaltag = 'START53_V27::All'
 
-# Events to process
-process.maxEvents.input = -1
+# Events to process1
 
+process.maxEvents.input = 1
 
-#process.readAK5PF    = cms.EDAnalyzer('JetCorrectorDBReader',  
- #       # below is the communication to the database 
-#        payloadName    = cms.untracked.string('AK5PF'),
-#        # this is used ONLY for the name of the printed txt files. You can use any name that you like, 
+process.readAK5PF    = cms.EDAnalyzer('JetCorrectorDBReader',  
+        # below is the communication to the database 
+        payloadName    = cms.untracked.string('AK5PF'),
+                             #        # this is used ONLY for the name of the printed txt files. You can use any name that you like, 
         # but it is recommended to use the GT name that you retrieved the files from.
-#        globalTag      = cms.untracked.string('START53_V27::All'),
-#        printScreen    = cms.untracked.bool(False),
-#        createTextFile = cms.untracked.bool(True)
-#                                      )
+        globalTag      = cms.untracked.string('START53_V27::All'),
+        printScreen    = cms.untracked.bool(False),
+        createTextFile = cms.untracked.bool(True)
+                                      )
 
-# Input files
-process.source.fileNames = [
-    'file:/afs/cern.ch/work/j/jalmond/FE4C2F81-D0E1-E111-9080-0030487E0A2D.root'
-]
 
 
 #----------------------------------------------------------------------------------------------------
@@ -178,7 +184,7 @@ process.cleanPatCandidates.replace ( process.cleanPatTaus, process.cleanPatTaus 
 #----------------------------------------------------------------------------------------------------
 
 process.analysisPatMuons = process.cleanPatMuons.clone()
-process.analysisPatMuons.finalCut = cms.string("isGlobalMuon & muonID('GlobalMuonPromptTight') & pt > 20")
+process.analysisPatMuons.finalCut = cms.string("isGlobalMuon & muonID('GlobalMuonPromptTight') & pt > 10")
 
 process.cleanPatCandidates.replace ( process.cleanPatMuons, process.cleanPatMuons + process.analysisPatMuons )
 
@@ -187,7 +193,7 @@ process.cleanPatCandidates.replace ( process.cleanPatMuons, process.cleanPatMuon
 #----------------------------------------------------------------------------------------------------
 
 process.analysisPatElectrons = process.cleanPatElectrons.clone()
-process.analysisPatElectrons.finalCut = cms.string('userInt("HEEPId") < 0.5')
+process.analysisPatElectrons.finalCut = cms.string('pt > 10')
 
 process.cleanPatCandidates.replace ( process.cleanPatElectrons, process.cleanPatElectrons + process.analysisPatElectrons )
 
@@ -235,8 +241,8 @@ addJetCollection(process,cms.InputTag('ak5PFchsJets'),
     doBTagging   = True , # Perform b-tagging and store b-tagging info in the jet
     doType1MET   = False, # Don't store Type1 PFMET information. This will be done by the runMEtUncertainties tool.
     jetIdLabel   = "ak5",# Which jet ID label should be used?
-    jetCorrLabel = ('AK5PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute', 'L5Flavor']), # Which jet corrections should be used?
-    #jetCorrLabel = ('AK5PF', ['L1FastJet', 'L2Relative',  'L3Absolute']), # Which jet corrections should be used?
+    jetCorrLabel = ('AK5PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute']), # Which jet corrections should be used?
+#    jetCorrLabel = ('AK5PF', ['L1FastJet', 'L2Relative',  'L3Absolute']), # Which jet corrections should be used?
     genJetCollection = cms.InputTag("ak5GenJets") # Which GEN jets should be used?
 )
 
@@ -256,7 +262,7 @@ process.patDefaultSequence.replace ( process.cleanPatJetsAK5PFchs, process.clean
 # Add the pileup MVA to the PFJets
 #----------------------------------------------------------------------------------------------------
 
-process.load("Leptoquarks.RootTupleMakerV2.pujetidsequence_cff")
+#process.load("Leptoquarks.RootTupleMakerV2.pujetidsequence_cff")
 
 #----------------------------------------------------------------------------------------------------
 # Switch to CaloJets
@@ -277,15 +283,15 @@ process.load("Leptoquarks.RootTupleMakerV2.pujetidsequence_cff")
 # - L3Absolute: https://twiki.cern.ch/twiki/bin/view/CMS/IntroToJEC#Mandatory_Jet_Energy_Corrections
 #----------------------------------------------------------------------------------------------------
 
-switchJetCollection(process,cms.InputTag('ak5CaloJets'),
-    doJetID      = True , # Perform jet ID algorithm and store ID info in the jet
-    doJTA        = True , # Perform jet track association and determine jet charge
-    doBTagging   = True , # Perform b-tagging and store b-tagging info in the jet
-    doType1MET   = True , # Store Type1 PFMET information.  Label of resulting PFMET collection is: patMETsAK5Calo
-    jetIdLabel   = "ak5",# Which jet ID label should be used?
-    jetCorrLabel = ('AK5Calo', ['L1FastJet', 'L2Relative', 'L3Absolute']), # Which jet corrections should be used?
-    genJetCollection = cms.InputTag("ak5GenJets") # Which GEN jets should be used?
-)
+#switchJetCollection(process,cms.InputTag('ak5CaloJets'),
+#    doJetID      = True , # Perform jet ID algorithm and store ID info in the jet
+#    doJTA        = True , # Perform jet track association and determine jet charge
+#    doBTagging   = True , # Perform b-tagging and store b-tagging info in the jet
+#    doType1MET   = True , # Store Type1 PFMET information.  Label of resulting PFMET collection is: patMETsAK5Calo
+#    jetIdLabel   = "ak5",# Which jet ID label should be used?
+#    jetCorrLabel = ('AK5Calo', ['L1FastJet', 'L2Relative', 'L3Absolute']), # Which jet corrections should be used?
+#    genJetCollection = cms.InputTag("ak5GenJets") # Which GEN jets should be used?
+#)
 
 #----------------------------------------------------------------------------------------------------
 # Define the systematic shift correction
@@ -404,13 +410,18 @@ process.patType1CorrectedPFMetType01Only.srcType1Corrections = cms.VInputTag(
 # This is MC, so analyze the smeared PFJets by default
 #----------------------------------------------------------------------------------------------------
 
-process.rootTuplePFJets.InputTag = cms.InputTag('smearedAnalysisPatJetsAK5PFchs')
-process.rootTuplePFJets.InputTagSmearedUp   = cms.InputTag('smearedAnalysisPatJetsAK5PFchsResUp')                                 
-process.rootTuplePFJets.InputTagSmearedDown = cms.InputTag('smearedAnalysisPatJetsAK5PFchsResDown')                                 
-process.rootTuplePFJets.InputTagScaledUp    = cms.InputTag('shiftedAnalysisPatJetsAK5PFchsEnUpForCorrMEt')                                 
-process.rootTuplePFJets.InputTagScaledDown  = cms.InputTag('shiftedAnalysisPatJetsAK5PFchsEnDownForCorrMEt')     
-
-
+#process.rootTuplePFJets.InputTag = cms.InputTag('smearedAnalysisPatJetsAK5PFchs')
+#process.rootTuplePFJets.InputTag = cms.InputTag('smearedAnalysisPatJetsAK5PFchs')       
+#process.rootTuplePFJets.InputTag = cms.InputTag('analysisPatJetsAK5PFchs')
+process.rootTuplePFJets.InputTag = cms.InputTag('cleanPatJetsAK5PFchs')
+#process.rootTuplePFJets.InputTagSmearedUp   = cms.InputTag('smearedAnalysisPatJetsAK5PFchsResUp')                                 
+#process.rootTuplePFJets.InputTagSmearedDown = cms.InputTag('smearedAnalysisPatJetsAK5PFchsResDown')                                 
+#process.rootTuplePFJets.InputTagScaledUp    = cms.InputTag('shiftedAnalysisPatJetsAK5PFchsEnUpForCorrMEt')                                 
+#process.rootTuplePFJets.InputTagScaledDown  = cms.InputTag('shiftedAnalysisPatJetsAK5PFchsEnDownForCorrMEt')     
+process.rootTuplePFJets.InputTagSmearedUp = cms.InputTag('cleanPatJetsAK5PFchs')
+process.rootTuplePFJets.InputTagSmearedDown = cms.InputTag('cleanPatJetsAK5PFchs')
+process.rootTuplePFJets.InputTagScaledUp    = cms.InputTag('cleanPatJetsAK5PFchs')
+process.rootTuplePFJets.InputTagScaledDown  =  cms.InputTag('cleanPatJetsAK5PFchs')
 #----------------------------------------------------------------------------------------------------
 # Set Lepton-Gen Matching Parameters
 #----------------------------------------------------------------------------------------------------
@@ -546,7 +557,7 @@ process.load ('Leptoquarks.LeptonJetGenTools.genTauMuElFromWs_cfi')
 
 process.p = cms.Path(
     # gen particle skimmer modules#
-#    process.readAK5PFchs*
+    #process.readAK5PF*
     process.ak5PFchsJetsSequence*
     process.genTausFromWs*
     process.genMuonsFromWs*
@@ -579,7 +590,7 @@ process.p = cms.Path(
     # Now the regular PAT default sequence
     process.patDefaultSequence*
     # Add the pileup MVA to the jets
-    process.puJetIdSqeuenceChs*
+    #process.puJetIdSqeuenceChs*
     # MET producers
     process.patMETsRawCalo*
     process.patMETsRawPF*

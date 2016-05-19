@@ -11,10 +11,12 @@ class RootTupleMakerV2_PFJets : public edm::EDProducer {
 
  private:
   void produce( edm::Event &, const edm::EventSetup & );
+  const edm::InputTag fastJetForJECInputTag;
   const edm::InputTag   inputTag , inputTagL1Offset;
   const edm::InputTag   inputTagSmearedUp, inputTagSmearedDown;
   const edm::InputTag   inputTagScaledUp, inputTagScaledDown;	 
   const std::string     prefix,suffix;
+
   const unsigned int    maxSize;
   const std::string     jecUncPath;
   const bool            readJECuncertainty;
