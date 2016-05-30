@@ -365,11 +365,13 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<std::vector<pat::Muon> > muons;
 	iEvent.getByLabel(inputTag, muons);
 
-	edm::Handle<edm::View<pat::Muon> > shiftedEnDownSrc;
-	edm::Handle<edm::View<pat::Muon> > shiftedEnUpSrc;
+	edm::Handle<std::vector<pat::Muon> > shiftedEnDownSrc;
+	edm::Handle<std::vector<pat::Muon> > shiftedEnUpSrc;
 
 	iEvent.getByLabel(inputTagEnDown, shiftedEnDownSrc);
 	iEvent.getByLabel(inputTagEnUp, shiftedEnUpSrc);
+	std::vector<pat::Muon>::const_iterator it_shiftedUp;
+	std::vector<pat::Muon>::const_iterator it_shiftedDown;
 
 	edm::Handle<reco::VertexCollection> primaryVertices;
 	iEvent.getByLabel(vtxInputTag,primaryVertices);
@@ -391,7 +393,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		edm::LogInfo("RootTupleMakerV2_MuonsInfo") << "Total # Muons: " << muons->size();
 		//std::cout << "Total # Muons: " << muons->size() << " " << inputTag << std::endl; 
 		size_t iMuon = 0;
-		int imu=0;
+		int imu=-1;
 		for( std::vector<pat::Muon>::const_iterator it = muons->begin(); it != muons->end(); ++it )
 		{
 		  //
@@ -423,31 +425,39 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 					genparEta=it->genParticle(igen)->eta();
 					genparPhi=it->genParticle(igen)->phi();
 				}
-				bool no_match=true;
-				for(unsigned int i_el=0; i_el < shiftedEnUpSrc->size(); i_el++){
-				  if(fabs(it->eta() - shiftedEnUpSrc->at(i_el).eta()) < 0.1){
-				    if(fabs(it->phi() - shiftedEnUpSrc->at(i_el).phi()) < 0.1){
-				      no_match=false;
-				      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
-				      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
 
-				      shiftedPxup                -> push_back ( shiftedEnUpSrc->at(i_el).px() );
-                                      shiftedPxdown               -> push_back ( shiftedEnDownSrc->at(i_el).px() );
-
-				      shiftedPyup                -> push_back ( shiftedEnUpSrc->at(i_el).py() );
-                                      shiftedPydown               -> push_back ( shiftedEnDownSrc->at(i_el).py() );
-				    }   
-				  }
+				if ( shiftedEnUpSrc.isValid() ){
+				  it_shiftedUp = shiftedEnUpSrc-> begin() + imu;
+				  shiftedEup                -> push_back ( it_shiftedUp->pt() );
+				  shiftedPxup                -> push_back ( it_shiftedUp->px() );
+				  shiftedPyup                -> push_back ( it_shiftedUp->py() );
 				}
-				if(no_match){
-				  shiftedEup                -> push_back ( it->pt());
-				  shiftedEdown               -> push_back (it->pt());
+				else{
+				  shiftedEup                -> push_back ( it->pt() );
+                                  shiftedPxup                -> push_back ( it->px() );
+                                  shiftedPyup                -> push_back ( it->py() );
 				}
-
+				if ( shiftedEnDownSrc.isValid() ){
+                                  it_shiftedDown = shiftedEnDownSrc-> begin() + imu;
+                                  shiftedEdown                -> push_back ( it_shiftedDown->pt() );
+                                  shiftedPxdown                -> push_back ( it_shiftedDown->px() );
+                                  shiftedPydown                -> push_back ( it_shiftedDown->py() );
+                                }
+				else{
+                                  shiftedEdown                -> push_back ( it->pt() );
+				  shiftedPxdown                -> push_back ( it->px() );
+                                  shiftedPydown                -> push_back ( it->py() );
+                                }
 			}
 			else {
-			  shiftedEup                -> push_back ( 0.);
-			  shiftedEdown               -> push_back ( 0.);
+			  shiftedEup                -> push_back ( it->pt() );
+			  shiftedPxup                -> push_back ( it->px() );
+			  shiftedPyup                -> push_back ( it->py() );
+
+			  shiftedEup                -> push_back ( it->pt() );
+			  shiftedPxup                -> push_back ( it->px() );
+			  shiftedPyup                -> push_back ( it->py() );
+
 			}
 
 			matchedgenparticlept     -> push_back ( (double)(genparPt) );

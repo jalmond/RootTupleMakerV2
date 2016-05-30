@@ -447,12 +447,13 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //iEvent.getByLabel("analysisPatElectrons", anal_electrons);
 
 
-  edm::Handle<edm::View<pat::Electron> > shiftedEnDownSrc;
-  edm::Handle<edm::View<pat::Electron> > shiftedEnUpSrc;
-
+  edm::Handle<std::vector<pat::Electron> >  shiftedEnDownSrc;
+  edm::Handle<std::vector<pat::Electron> > shiftedEnUpSrc;
   iEvent.getByLabel(inputTagEnDown, shiftedEnDownSrc);
   iEvent.getByLabel(inputTagEnUp, shiftedEnUpSrc);
-  
+  std::vector<pat::Electron>::const_iterator it_shiftedUp;
+  std::vector<pat::Electron>::const_iterator it_shiftedDown;
+
 
   // PAT trigger event
 
@@ -513,10 +514,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     edm::LogInfo("RootTupleMakerV2_ElectronsInfo") << "Total # Electrons: " << electrons->size();
 
     size_t iElectron = 0;
-    int iEl=0;
+    int iEl=-1;
 
     for( std::vector<pat::Electron>::const_iterator it = electrons->begin(); it != electrons->end(); ++it ) {
-
+      
+      iEl++;
       //------------------------------------------------------------------------
       // Break from the loop once we have enough electrons
       //------------------------------------------------------------------------
@@ -658,31 +660,38 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	  }
 	}
 	
-	bool no_match=true;
-	for(unsigned int i_el=0; i_el < shiftedEnUpSrc->size(); i_el++){
-	  if(fabs(it->eta() - shiftedEnUpSrc->at(i_el).eta()) < 0.1){
-	    if(fabs(it->phi() - shiftedEnUpSrc->at(i_el).phi()) < 0.1){
-	      no_match=false;
-	      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
-	      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
-	      
-	      shiftedPxup                -> push_back ( shiftedEnUpSrc->at(i_el).px() );
-              shiftedPxdown               -> push_back ( shiftedEnDownSrc->at(i_el).px() );
-
-	      shiftedPyup                -> push_back ( shiftedEnUpSrc->at(i_el).py() );
-              shiftedPydown               -> push_back ( shiftedEnDownSrc->at(i_el).py() );
-	    }
-	  }
+	if ( shiftedEnUpSrc.isValid() ){
+	  it_shiftedUp = shiftedEnUpSrc -> begin() + iEl;
+	  shiftedEup                -> push_back ( it_shiftedUp->pt() );
+	  shiftedPxup                -> push_back ( it_shiftedUp->px() );
+	  shiftedPyup                -> push_back ( it_shiftedUp->py() );
+	 
 	}
-	if(no_match){
+	else{
 	  shiftedEup                -> push_back ( it->pt());
-	  shiftedEdown                -> push_back ( it->pt());
+	  shiftedPxup                -> push_back ( it->px());
+	  shiftedPyup                -> push_back ( it->py());
 	}
+	if ( shiftedEnDownSrc.isValid() ){
+          it_shiftedDown = shiftedEnUpSrc -> begin() + iEl;
+          shiftedEdown                -> push_back ( it_shiftedDown->pt() );
+          shiftedPxdown                -> push_back ( it_shiftedDown->px() );
+          shiftedPydown                -> push_back ( it_shiftedDown->py() );
+
+	}
+	else{
+          shiftedEdown                -> push_back ( it->pt());
+          shiftedPxdown                -> push_back ( it->px());
+          shiftedPydown                -> push_back ( it->py());
+        }
       }
       else{
-	
-        shiftedEup                -> push_back ( 0.);
-        shiftedEdown               -> push_back ( 0.);
+	shiftedEup                -> push_back ( it->pt());
+	shiftedPxup                -> push_back ( it->px());
+	shiftedPyup                -> push_back ( it->py());	
+	shiftedEdown                -> push_back ( it->pt());
+	shiftedPxdown                -> push_back ( it->px());
+	shiftedPydown                -> push_back ( it->py());
       }
       
 
@@ -915,7 +924,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
       ++iElectron;
-      ++iEl;
 
     }
   } else {

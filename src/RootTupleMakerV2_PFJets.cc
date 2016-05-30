@@ -344,7 +344,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		      std::cout << it->px()  << " " << it->py()  << std::endl;
 		    }
 
-		    if( it->pt()< 20. ) 
+		    if( it->pt()< 10. ) 
 		      continue;
 		    // exit from loop when you reach the required number of jets                                                                                                
                     if(eta->size() >= maxSize)
