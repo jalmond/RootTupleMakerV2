@@ -11,6 +11,8 @@ RootTupleMakerV2_MET::RootTupleMakerV2_MET(const edm::ParameterSet& iConfig) :
     store_MET_significance (iConfig.getParameter<bool>  ("StoreMETSignificance"))
 {
   produces <std::vector<double> > ( prefix + "MET" + suffix );
+  produces <std::vector<double> > ( prefix + "METx" + suffix );
+  produces <std::vector<double> > ( prefix + "METy" + suffix );
   produces <std::vector<double> > ( prefix + "METPhi" + suffix );
   produces <std::vector<double> > ( prefix + "SumET" + suffix );
   if ( store_uncorrected_MET ) {
@@ -31,6 +33,8 @@ void RootTupleMakerV2_MET::
 produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   std::auto_ptr<std::vector<double> >  met  ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  metx  ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  mety  ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  metphi  ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  sumet  ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  metuncorr  ( new std::vector<double>()  );
@@ -50,9 +54,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     edm::LogInfo("RootTupleMakerV2_METInfo") << "Total # METs: " << mets->size();
 
     for( std::vector<pat::MET>::const_iterator it = mets->begin(); it != mets->end(); ++it ) {
-
+      
+      //std::cout << "MET = " << it->pt() << " " << inputTag  << std::endl;
       // fill in all the vectors
       met->push_back( it->pt() );
+      metx->push_back( it->px() );
+      mety->push_back( it->py() );
       metphi->push_back( it->phi() );
       sumet->push_back( it->sumEt() );
       
@@ -60,6 +67,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	metuncorr->push_back( it->uncorrectedPt(pat::MET::uncorrALL) );
 	metphiuncorr->push_back( it->uncorrectedPhi(pat::MET::uncorrALL) );
 	sumetuncorr->push_back( it->sumEt() - it->corSumEt(pat::MET::uncorrALL) );
+	//metxuncorr->push_back( it->uncorrectedPx(pat::MET::uncorrALL) );
+	//metyuncorr->push_back( it->uncorrectedPy(pat::MET::uncorrALL) );
       }
 
       if ( store_MET_significance ) {
@@ -86,6 +95,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //-----------------------------------------------------------------
   // put vectors in the event
   iEvent.put( met, prefix + "MET" + suffix );
+  iEvent.put( metx, prefix + "METx" + suffix );
+  iEvent.put( mety, prefix + "METy" + suffix );
   iEvent.put( metphi, prefix + "METPhi" + suffix );
   iEvent.put( sumet, prefix + "SumET" + suffix );
   if ( store_uncorrected_MET ) {

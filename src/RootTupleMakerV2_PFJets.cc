@@ -37,11 +37,25 @@ vtxInputTag(iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "Eta" + suffix );
 	produces <std::vector<double> > ( prefix + "Phi" + suffix );
 	produces <std::vector<double> > ( prefix + "Pt" + suffix );
+	produces <std::vector<double> > ( prefix + "Px" + suffix );
+	produces <std::vector<double> > ( prefix + "Py" + suffix );
 	produces <std::vector<double> > ( prefix + "SmearedUpPt" + suffix );
 	produces <std::vector<double> > ( prefix + "SmearedDownPt" + suffix );
 	produces <std::vector<double> > ( prefix + "ScaledUpPt" + suffix );
 	produces <std::vector<double> > ( prefix + "ScaledDownPt" + suffix );
+
+	produces <std::vector<double> > ( prefix + "SmearedUpPx" + suffix );
+        produces <std::vector<double> > ( prefix + "SmearedDownPx" + suffix );
+        produces <std::vector<double> > ( prefix + "ScaledUpPx" + suffix );
+        produces <std::vector<double> > ( prefix + "ScaledDownPx" + suffix );
+
+	produces <std::vector<double> > ( prefix + "SmearedUpPy" + suffix );
+        produces <std::vector<double> > ( prefix + "SmearedDownPy" + suffix );
+        produces <std::vector<double> > ( prefix + "ScaledUpPy" + suffix );
+        produces <std::vector<double> > ( prefix + "ScaledDownPy" + suffix );
 	produces <std::vector<double> > ( prefix + "PtRaw" + suffix );
+	produces <std::vector<double> > ( prefix + "PxRaw" + suffix );
+	produces <std::vector<double> > ( prefix + "PyRaw" + suffix );
 	produces <std::vector<double> > ( prefix + "Energy" + suffix );
 	produces <std::vector<double> > ( prefix + "SmearedUpEnergy" + suffix );
 	produces <std::vector<double> > ( prefix + "SmearedDownEnergy" + suffix );
@@ -116,6 +130,8 @@ vtxInputTag(iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 }
 
 
+
+
 PFJetIDSelectionFunctor pfjetIDLoose( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
 PFJetIDSelectionFunctor pfjetIDTight( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::TIGHT );
 
@@ -129,15 +145,30 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  eta  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  phi  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  pt  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  px  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  py  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptSmearedUp  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptSmearedDown  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptScaledUp  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptScaledDown  ( new std::vector<double>()  );
+	
+	std::auto_ptr<std::vector<double> >  pxSmearedUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pxSmearedDown  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pxScaledUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pxScaledDown  ( new std::vector<double>()  );
+
+	std::auto_ptr<std::vector<double> >  pySmearedUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pySmearedDown  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pyScaledUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pyScaledDown  ( new std::vector<double>()  );
+
 	std::auto_ptr<std::vector<double> >  energySmearedUp  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energySmearedDown  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energyScaledUp  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energyScaledDown  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  pt_raw  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  px_raw  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  py_raw  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energy  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energy_raw ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  jecUnc_vec ( new std::vector<double>()  );
@@ -213,7 +244,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr <std::vector<double > > betaClassic     ( new std::vector<double>());
 	
 	//-----------------------------------------------------------------
-
+	/*
 	//JetCorrectorParameters *ResJetPar = new JetCorrectorParameters("START53_V27::All_L2L3Residual_AK5PFchs.txt"); 
 	JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters("START53_V27::All_L3Absolute_AK5PFchs.txt");
 	JetCorrectorParameters *L2JetPar  = new JetCorrectorParameters("START53_V27::All_L2Relative_AK5PFchs.txt");
@@ -225,7 +256,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	vPar.push_back(*L3JetPar);
 	//vPar.push_back(*ResJetPar);
 	FactorizedJetCorrector *JetCorrector = new FactorizedJetCorrector(vPar);
-
+	*/
 
 	// OLD
 	//   edm::FileInPath fipUnc(jecUncPath);;
@@ -262,9 +293,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<std::vector<pat::Jet> > jets;
 	iEvent.getByLabel(inputTag, jets);
 
-	// edm::Handle<std::vector<pat::Jet> > jetsL1Offset;
-	// iEvent.getByLabel(inputTagL1Offset, jetsL1Offset);
-
 	edm::Handle<std::vector<pat::Jet> > jetsSmearedUp;
 	iEvent.getByLabel(inputTagSmearedUp, jetsSmearedUp);
 	std::vector<pat::Jet>::const_iterator it_smearedUp;
@@ -284,9 +312,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<reco::VertexCollection> primaryVertices;  // DB
 	iEvent.getByLabel(vtxInputTag,primaryVertices);       // DB
 
-	edm::Handle<edm::View<pat::Jet> > sjets;
-	iEvent.getByLabel("selectedPatJetsAK5PF",sjets);
-		
+	//edm::Handle<edm::View<pat::Jet> > sjets;
+	//iEvent.getByLabel("selectedPatJetsAK5PF",sjets);
 	
 	//edm::Handle<edm::ValueMap<float> > puJetIdMVA;
 	//iEvent.getByLabel("puJetMva","full53xDiscriminant", puJetIdMVA);
@@ -294,30 +321,37 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	//edm::Handle<edm::ValueMap<int> > puJetIdFlag;
 	//iEvent.getByLabel("puJetMva","full53xId",puJetIdFlag);
 	
-	std::cout << "Jets: " <<  iEvent.id().event() << std::endl;
+	bool verbose(false);
+
+	if(verbose)std::cout << "Jets: " <<  iEvent.id().event() << std::endl;
 	if(jets.isValid())
 	{
 		edm::LogInfo("RootTupleMakerV2_PFJetsInfo") << "Total # PFJets: " << jets->size();
 		
 		int ijet = -1;
-		std::cout << "Total # PFJets: " << jets->size() << std::endl;
+		if(verbose)std::cout << "Total # PFJets: " << jets->size() << std::endl;
 		for( std::vector<pat::Jet>::const_iterator it = jets->begin(); it != jets->end(); ++it )
 		  {
 		    ijet++;
-		    
-		    std::cout << "Jet " << ijet << " pt = " << it->pt() << " eta = " << it->eta() << " phi = " << it->phi()  << " cvs = " <<  it->bDiscriminator("combinedSecondaryVertexMVABJetTags"      ) << "   or  " <<  it->bDiscriminator("combinedSecondaryVertexBJetTags"     ) << std::endl;
-		    
-		    continue;
-		    std::cout << it->correctedJet("Uncorrected").pt() << " " << it->correctedJet("L1FastJet").pt()/it->correctedJet("Uncorrected").pt() << " " << it->correctedJet("L2Relative").pt()/ it->correctedJet("L1FastJet").pt() << " " << it->correctedJet("L3Absolute").pt()/it->correctedJet("L2Relative").pt() << std::endl;  
-		        // Only look at jets with pt>=20 GeV
-   		        if( it->pt()< 20. ) 
-			        continue;
-			
-			// exit from loop when you reach the required number of jets
-			if(eta->size() >= maxSize)
-				break;
 
-			retpf.set(false);
+		    
+		    if(verbose){
+		      std::cout << "Jet " << ijet << " pt = " << it->pt() << " eta = " << it->eta() << " phi = " << it->phi()  << " cvs = " <<  it->bDiscriminator("combinedSecondaryVertexMVABJetTags"      ) << "   or  " <<  it->bDiscriminator("combinedSecondaryVertexBJetTags"     ) << std::endl;
+		      
+		      std::cout << it->correctedJet("Uncorrected").pt() << " " << it->correctedJet("L1FastJet").pt()/it->correctedJet("Uncorrected").pt() << " " << it->correctedJet("L2Relative").pt()/ it->correctedJet("L1FastJet").pt() << " " << it->correctedJet("L3Absolute").pt()/it->correctedJet("L2Relative").pt() << std::endl;  
+		      // Only look at jets with pt>=20 GeV
+		      std::cout << it->correctedJet("Uncorrected").px() << " " << std::cout << it->correctedJet("Uncorrected").py() << std::endl;
+		      std::cout << it->px()  << " " << it->py()  << std::endl;
+		    }
+
+		    if( it->pt()< 20. ) 
+		      continue;
+		    // exit from loop when you reach the required number of jets                                                                                                
+                    if(eta->size() >= maxSize)
+                      break;
+		
+
+		    retpf.set(false);
 			int passjetLoose =0;
 			if(pfjetIDLoose( *it, retpf )) passjetLoose =1;
 
@@ -338,27 +372,29 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				jecUnc->setJetEta( it->eta() );
 				// the uncertainty is a function of the corrected pt
 				jecUnc->setJetPt( it->pt() );
-				JetCorrector->setJetEta(it->eta() );
+				
+				/*JetCorrector->setJetEta(it->eta() );
 				JetCorrector->setJetPt(it->correctedJet("Uncorrected").pt());
 				JetCorrector->setJetA(it->jetArea());
 
 				edm::Handle<double> rhoHJets;
 				iEvent.getByLabel(fastJetForJECInputTag,rhoHJets);
 				JetCorrector->setRho(double( *rhoHJets.product() )); 
-				
+				*/
 			}
-			
-			std::cout << "RAW pt = " << it->correctedJet("Uncorrected").pt()  << std::endl;
+			/*
+			if(verbose)std::cout << "RAW pt = " << it->correctedJet("Uncorrected").pt()  << std::endl;
 			std::vector<float> factors = JetCorrector->getSubCorrections();
+			
 			for(unsigned int i = 0; i < factors.size() ; i++){
 			  std::cout << factors.at(i) << " " <<  it->correctedJet("Uncorrected").pt()  *  factors.at(i)<< std::endl;
-			}
+			}*/
 			
 
 			//// 
 			reco::Candidate::LorentzVector  uncorrJet = it->correctedP4(0);
-			std::cout << " uncorrJet.pt() = " << uncorrJet.pt() << std::endl; 
-			if(1){
+			if(verbose)std::cout << " uncorrJet.pt() = " << uncorrJet.pt() << std::endl; 
+			/*if(1){
 			  JetCorrector->setJetEta( uncorrJet.eta() );
 			  JetCorrector->setJetPt ( uncorrJet.pt() );
 			  JetCorrector->setJetE  ( uncorrJet.energy() );
@@ -368,11 +404,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  iEvent.getByLabel(fastJetForJECInputTag,rhoHJets);
 			  JetCorrector->setRho(double( *rhoHJets.product() ));
 			  JetCorrector->setNPV   ( primaryVertices->size() );
-			  std::cout << "it->jetArea() = " << it->jetArea() << "  rhoHJets.product = " << double( *rhoHJets.product() ) << std::endl;
+			  if(verbose)std::cout << "it->jetArea() = " << it->jetArea() << "  rhoHJets.product = " << double( *rhoHJets.product() ) << std::endl;
 			}
 			double corr = JetCorrector->getCorrection();
-			std::cout << "CORRECTED JET PT -= " << corr * uncorrJet.pt() << std::endl;
-
+			if(verbose)std::cout << "CORRECTED JET PT -= " << corr * uncorrJet.pt() << std::endl;
+			*/
+			
 			// OLD
 			//       double corr = 1.;
 			//       if( applyResJEC && iEvent.isRealData() ) {
@@ -593,30 +630,40 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			eta->push_back( it->eta() );
 			phi->push_back( it->phi() );
 			pt->push_back( it->pt() );
+			px->push_back( it->px() );
+			py->push_back( it->py() );
 
 			if ( !iEvent.isRealData() ) { 
 			  
 			  if ( jetsSmearedUp.isValid() ){
 			    it_smearedUp = jetsSmearedUp -> begin() + ijet;
 			    ptSmearedUp -> push_back ( it_smearedUp -> pt() );
+			    pxSmearedUp -> push_back ( it_smearedUp -> px() );
+			    pySmearedUp -> push_back ( it_smearedUp -> py() );
 			    energySmearedUp -> push_back ( it_smearedUp -> energy() );
 			  }
 			  
 			  if ( jetsSmearedDown.isValid() ){
 			    it_smearedDown = jetsSmearedDown -> begin() + ijet;
 			    ptSmearedDown -> push_back ( it_smearedDown -> pt() );
+			    pxSmearedDown -> push_back ( it_smearedDown -> px() );
+			    pySmearedDown -> push_back ( it_smearedDown -> py() );
 			    energySmearedDown -> push_back ( it_smearedDown -> energy() );
 			  }
 			  
 			  if ( jetsScaledUp.isValid() ){
 			    it_scaledUp = jetsScaledUp -> begin() + ijet;
 			    ptScaledUp -> push_back ( it_scaledUp -> pt() );
+			    pxScaledUp -> push_back ( it_scaledUp -> px() );
+			    pyScaledUp -> push_back ( it_scaledUp -> py() );
 			    energyScaledUp -> push_back ( it_scaledUp -> energy() );
 			  }
 			  
 			  if ( jetsScaledDown.isValid() ){
 			    it_scaledDown = jetsScaledDown -> begin() + ijet;
 			    ptScaledDown -> push_back ( it_scaledDown -> pt() );
+			    pxScaledDown -> push_back ( it_scaledDown -> px() );
+			    pyScaledDown -> push_back ( it_scaledDown -> py() );
 			    energyScaledDown -> push_back ( it_scaledDown -> energy() );
 			  }
 			}
@@ -630,9 +677,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  energyScaledUp    -> push_back ( it -> energy() );
 			  ptScaledDown      -> push_back ( it -> pt()     );
 			  energyScaledDown  -> push_back ( it -> energy() );
+			  
 			}
-
+			//std::cout << it->correctedJet("Uncorrected").pt() << " " << it->pt() << std::endl;
 			pt_raw->push_back( it->correctedJet("Uncorrected").pt() );
+			px_raw->push_back( it->correctedJet("Uncorrected").px() );
+			py_raw->push_back( it->correctedJet("Uncorrected").py() );
 			energy->push_back( it->energy() );
 			energy_raw->push_back( it->correctedJet("Uncorrected").energy() );
 
@@ -774,20 +824,40 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( closestVertex3DIndex,prefix + "ClosestVertex3DIndex" + suffix);
 	iEvent.put( closestVertexXYIndex,prefix + "ClosestVertexXYIndex" + suffix);
 	iEvent.put( closestVertexZIndex,prefix + "ClosestVertexZIndex" + suffix);
-	
 	iEvent.put( eta, prefix + "Eta" + suffix );
 	iEvent.put( phi, prefix + "Phi" + suffix );
 	iEvent.put( pt, prefix + "Pt" + suffix );
+	iEvent.put( px, prefix + "Px" + suffix );
+	iEvent.put( py, prefix + "Py" + suffix );
+
 	iEvent.put( ptSmearedUp, prefix + "SmearedUpPt" + suffix );
 	iEvent.put( ptSmearedDown, prefix + "SmearedDownPt" + suffix );
-	iEvent.put( ptScaledUp, prefix + "ScaledUpPt" + suffix );
+	
+	iEvent.put( pxSmearedUp, prefix + "SmearedUpPx" + suffix );
+        iEvent.put( pxSmearedDown, prefix + "SmearedDownPx" + suffix );
+
+	iEvent.put( pySmearedUp, prefix + "SmearedUpPy" + suffix );
+        iEvent.put( pySmearedDown, prefix + "SmearedDownPy" + suffix );
+
+	iEvent.put( ptScaledUp, prefix + "ScaledUpPt" + suffix );		
 	iEvent.put( ptScaledDown, prefix + "ScaledDownPt" + suffix );
+
+        iEvent.put( pxScaledUp, prefix + "ScaledUpPx" + suffix );
+        iEvent.put( pxScaledDown, prefix + "ScaledDownPx" + suffix );
+
+        iEvent.put( pyScaledUp, prefix + "ScaledUpPy" + suffix );
+        iEvent.put( pyScaledDown, prefix + "ScaledDownPy" + suffix );
+
 	iEvent.put( pt_raw, prefix + "PtRaw" + suffix );
+	iEvent.put( px_raw, prefix + "PxRaw" + suffix );
+	iEvent.put( py_raw, prefix + "PyRaw" + suffix );
 	iEvent.put( energy, prefix + "Energy" + suffix );
 	iEvent.put( energySmearedUp, prefix + "SmearedUpEnergy" + suffix );
 	iEvent.put( energySmearedDown, prefix + "SmearedDownEnergy" + suffix );
 	iEvent.put( energyScaledUp, prefix + "ScaledUpEnergy" + suffix );
 	iEvent.put( energyScaledDown, prefix + "ScaledDownEnergy" + suffix );
+
+
 	iEvent.put( energy_raw, prefix + "EnergyRaw" + suffix );
 	iEvent.put( jecUnc_vec, prefix + "JECUnc" + suffix );
 	iEvent.put( l2l3resJEC_vec, prefix + "L2L3ResJEC" + suffix );

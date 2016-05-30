@@ -18,6 +18,9 @@ from RecoMET.METFilters.CSCTightHaloFilter_cfi import *
 
 from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import *
 HBHENoiseFilter.taggingMode = cms.bool ( True ) 
+HBHENoiseFilter.minIsolatedNoiseSumE        = 999999.
+HBHENoiseFilter.minNumIsolatedNoiseChannels = 999999
+HBHENoiseFilter.minIsolatedNoiseSumEt       = 999999.
 
 # ------------------------------------------------------------------------------------
 # HBHE noise filter results producer

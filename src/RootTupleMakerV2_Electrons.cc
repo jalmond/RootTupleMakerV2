@@ -48,8 +48,6 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   beamSpotInputTag         (iConfig.getParameter<edm::InputTag>("BeamSpotInputTag"         )),
   conversionsInputTag      (iConfig.getParameter<edm::InputTag>("ConversionsInputTag"      )),
   rhoInputTag              (iConfig.getParameter<edm::InputTag>("RhoInputTag"              )),
-  pfIsolation03InputTags   (iConfig.getParameter<std::vector<edm::InputTag> >("PFIsolationValues03")),
-  pfIsolation04InputTags   (iConfig.getParameter<std::vector<edm::InputTag> >("PFIsolationValues04")),
   electronIso              (iConfig.getParameter<double>       ("ElectronIso"              )),
   muonPt                   (iConfig.getParameter<double>       ("MuonPt"                   )),
   muonIso                  (iConfig.getParameter<double>       ("MuonIso"                  )),
@@ -74,6 +72,8 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   produces <std::vector<double> > ( prefix + "Eta"                      + suffix );
   produces <std::vector<double> > ( prefix + "Phi"                      + suffix );
   produces <std::vector<double> > ( prefix + "Pt"                       + suffix );
+  produces <std::vector<double> > ( prefix + "Px"                       + suffix );
+  produces <std::vector<double> > ( prefix + "Py"                       + suffix );
   produces <std::vector<double> > ( prefix + "PtHeep"                   + suffix );
   produces <std::vector<double> > ( prefix + "Energy"                   + suffix );
   produces <std::vector<double> > ( prefix + "CaloEnergy"               + suffix );
@@ -187,6 +187,11 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
 
   produces <std::vector<double> > ( prefix + "shiftedEup"                    + suffix );
   produces <std::vector<double> > ( prefix + "shiftedEdown"                    + suffix );
+  
+  produces <std::vector<double> > ( prefix + "shiftedPxup"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedPxdown"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedPyup"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedPydown"                    + suffix );
 
   // Track information
 
@@ -245,6 +250,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::auto_ptr<std::vector<double> >  eta                       ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  phi                       ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  pt                        ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  px                        ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  py                        ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  ptHeep                    ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  energy                    ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  caloEnergy                ( new std::vector<double>()  );
@@ -358,6 +365,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::auto_ptr<std::vector<double> >  shiftedEup                ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  shiftedEdown              ( new std::vector<double>()  );
   
+  std::auto_ptr<std::vector<double> >  shiftedPxup                ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedPxdown              ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedPyup                ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedPydown              ( new std::vector<double>()  );
   // Track information 
 
   std::auto_ptr<std::vector<double> >  trackVx                   ( new std::vector<double>()  );
@@ -411,7 +422,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.getByLabel(dcsInputTag, dcsHandle);
   
   // Primary vertices
-  
+
   edm::Handle<reco::VertexCollection> primaryVertices;
   iEvent.getByLabel(vtxInputTag,primaryVertices);
 
@@ -421,21 +432,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.getByLabel(beamSpotInputTag, bsHandle); 
 
   // Photon conversion information
-
   edm::Handle<reco::ConversionCollection> hConversions;
   iEvent.getByLabel(conversionsInputTag, hConversions); 
 
   // ParticleFlow-based isolation
 
-  size_t nPfIsolationTypes = 3;
-
-  IsoDepositVals pfIsolation03Values(nPfIsolationTypes); 
-  IsoDepositVals pfIsolation04Values(nPfIsolationTypes); 
-  
-  for (size_t j = 0; j<nPfIsolationTypes; ++j) {
-    iEvent.getByLabel( pfIsolation03InputTags[j], pfIsolation03Values[j]);
-    iEvent.getByLabel( pfIsolation04InputTags[j], pfIsolation04Values[j]);
-  }
   
   // PAT electrons
 
@@ -506,11 +507,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Loop over electrons (finally!)
   //------------------------------------------------------------------------
 
+  
+
   if(electrons.isValid()) {
     edm::LogInfo("RootTupleMakerV2_ElectronsInfo") << "Total # Electrons: " << electrons->size();
 
     size_t iElectron = 0;
     int iEl=0;
+
     for( std::vector<pat::Electron>::const_iterator it = electrons->begin(); it != electrons->end(); ++it ) {
 
       //------------------------------------------------------------------------
@@ -518,7 +522,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       //------------------------------------------------------------------------
 
       if(eta->size() >= maxSize) break;
-      if(it->pt() > 20) std::cout << "Electron eta = "<< it->eta() <<  " phi = " << it->phi() << " pt="  << it->pt()<< std::endl;
+
+      pfChargedHadronIso03     -> push_back (  it->chargedHadronIso()); // (*pfIsolation04Values[0])[originalGsfElectronRef] );                               
+      pfPhotonIso03            -> push_back (  it->photonIso() );//(*pfIsolation04Values[1])[originalGsfElectronRef] );                                       
+      pfNeutralHadronIso03     -> push_back (  it->neutralHadronIso());//(*pfIsolation04Values[2])[originalGsfElectronRef] );                                 
+
+
 
 
       //------------------------------------------------------------------------
@@ -550,11 +559,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       //------------------------------------------------------------------------
       
       int passId = 0;
-      if (it->electronID("eidRobustLoose"     )>0) passId = passId | 1<<0;
-      if (it->electronID("eidRobustTight"     )>0) passId = passId | 1<<1;
-      if (it->electronID("eidLoose"           )>0) passId = passId | 1<<2;
-      if (it->electronID("eidTight"           )>0) passId = passId | 1<<3;
-      if (it->electronID("eidRobustHighEnergy")>0) passId = passId | 1<<4;
+      //if (it->electronID("eidRobustLoose"     )>0) passId = passId | 1<<0;
+      //if (it->electronID("eidRobustTight"     )>0) passId = passId | 1<<1;
+      //if (it->electronID("eidLoose"           )>0) passId = passId | 1<<2;
+      //if (it->electronID("eidTight"           )>0) passId = passId | 1<<3;
+      //if (it->electronID("eidRobustHighEnergy")>0) passId = passId | 1<<4;
       if (it->electronID("mvaTrigV0"          )>0) passId = passId | 1<<5;
       if (it->electronID("mvaNonTrigV0"       )>0) passId = passId | 1<<6;
       
@@ -563,7 +572,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       float mva_trigV0 = it->electronID("mvaTrigV0"          );
       float mva_NontrigV0 = it->electronID("mvaNonTrigV0"          );
       
-      
       //------------------------------------------------------------------------
       // Trigger matching
       // 
@@ -571,7 +579,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       // http://cmslxr.fnal.gov/lxr/source/PhysicsTools/PatExamples/plugins/PatTriggerAnalyzer.cc
       //------------------------------------------------------------------------
 
-      // Double electron
 
       const pat::TriggerObjectRef doubleElectronTrigRef( matchHelper.triggerMatchObject( electrons, iElectron, doubleEleTriggerMatch, iEvent, *triggerEvent ) );
       if ( doubleElectronTrigRef.isAvailable() && doubleElectronTrigRef.isNonnull() ) { 
@@ -658,6 +665,12 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	      no_match=false;
 	      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
 	      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
+	      
+	      shiftedPxup                -> push_back ( shiftedEnUpSrc->at(i_el).px() );
+              shiftedPxdown               -> push_back ( shiftedEnDownSrc->at(i_el).px() );
+
+	      shiftedPyup                -> push_back ( shiftedEnUpSrc->at(i_el).py() );
+              shiftedPydown               -> push_back ( shiftedEnDownSrc->at(i_el).py() );
 	    }
 	  }
 	}
@@ -769,6 +782,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       eta                      -> push_back ( it->eta() );
       phi                      -> push_back ( it->phi() );
       pt                       -> push_back ( it->pt() );
+      px                       -> push_back ( it->px() );
+      py                       -> push_back ( it->py() );
       ptHeep                   -> push_back ( it->caloEnergy()*sin(it->p4().theta()) );
       energy                   -> push_back ( it->energy() );
       caloEnergy               -> push_back ( it->caloEnergy() );
@@ -786,7 +801,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       eSuperClusterOverP       -> push_back( it->eSuperClusterOverP() );
 
       // ID information
-      
+     
       mvatrigV0                -> push_back(mva_trigV0);
       mvaNontrigV0             -> push_back(mva_NontrigV0);
       passIds                  -> push_back( passId );
@@ -797,6 +812,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       passEGammaIDTrigTight    -> push_back (EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, *it));
       passEGammaIDTrigWP70     -> push_back (EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERWP70 , *it));
       passEGammaIDEoP          -> push_back (EgammaCutBasedEleId::PassEoverPCuts(*it));
+
 
       // Does this electron overlap with a muon?
       overlaps                 -> push_back( ovrlps );
@@ -812,6 +828,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       gsfCtfScPixCharge        -> push_back( it->isGsfCtfScPixChargeConsistent() );
       gsfScPixCharge           -> push_back( it->isGsfScPixChargeConsistent() );
       gsfCtfCharge             -> push_back( it->isGsfCtfChargeConsistent() );
+
 
       // EB or EE - Ferdinando Giordano
       isEB                     -> push_back( it->isEB() );
@@ -832,7 +849,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       e2x5overe5x5             -> push_back ( (it->e5x5()>0) ? (it->e2x5Max()/it->e5x5()) : 0 );
 
       // Isolation variables: PAT
-      
+
       trkIsoPAT                -> push_back( it->trackIso() );
       ecalIsoPAT               -> push_back( it->ecalIso() );
       hcalIsoPAT               -> push_back( it->hcalIso() );
@@ -843,13 +860,14 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       edm::Ptr<reco::Candidate> originalGsfElectronRef = it -> originalObjectRef();
       
-      pfChargedHadronIso03     -> push_back ( (*pfIsolation03Values[0])[originalGsfElectronRef] );
-      pfPhotonIso03            -> push_back ( (*pfIsolation03Values[1])[originalGsfElectronRef] );
-      pfNeutralHadronIso03     -> push_back ( (*pfIsolation03Values[2])[originalGsfElectronRef] );
+      pfChargedHadronIso04     -> push_back ( it->userIsolation("pat::User2Iso"));//(*pfIsolation03Values[0])[originalGsfElectronRef] );
+      pfPhotonIso04            -> push_back ( it->userIsolation("pat::User4Iso"));//(*pfIsolation03Values[1])[originalGsfElectronRef] );
+      pfNeutralHadronIso04     -> push_back ( it->userIsolation("pat::User3Iso") );//(*pfIsolation03Values[2])[originalGsfElectronRef] );
       
-      pfChargedHadronIso04     -> push_back ( (*pfIsolation04Values[0])[originalGsfElectronRef] );
-      pfPhotonIso04            -> push_back ( (*pfIsolation04Values[1])[originalGsfElectronRef] );
-      pfNeutralHadronIso04     -> push_back ( (*pfIsolation04Values[2])[originalGsfElectronRef] );
+      pfChargedHadronIso03     -> push_back (  it->chargedHadronIso()); // (*pfIsolation04Values[0])[originalGsfElectronRef] );
+      pfPhotonIso03            -> push_back (  it->photonIso() );//(*pfIsolation04Values[1])[originalGsfElectronRef] );
+      pfNeutralHadronIso03     -> push_back (  it->neutralHadronIso());//(*pfIsolation04Values[2])[originalGsfElectronRef] );
+      
 
       // Isolation variables: DR 0.3				        
       
@@ -898,6 +916,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       ++iElectron;
       ++iEl;
+
     }
   } else {
     edm::LogError("RootTupleMakerV2_ElectronsError") << "Error! Can't get the product " << inputTag;
@@ -912,6 +931,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put( eta                     , prefix + "Eta"                      + suffix );
   iEvent.put( phi                     , prefix + "Phi"                      + suffix );
   iEvent.put( pt                      , prefix + "Pt"                       + suffix );
+  iEvent.put( px                      , prefix + "Px"                       + suffix );
+  iEvent.put( py                      , prefix + "Py"                       + suffix );
   iEvent.put( ptHeep                  , prefix + "PtHeep"                   + suffix );
   iEvent.put( energy                  , prefix + "Energy"                   + suffix );
   iEvent.put( caloEnergy              , prefix + "CaloEnergy"               + suffix );
@@ -1025,7 +1046,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Energy shift
   iEvent.put( shiftedEup                 , prefix + "shiftedEup"                  + suffix );
   iEvent.put( shiftedEdown               , prefix + "shiftedEdown"                  + suffix );
-
+  
+  iEvent.put( shiftedPxup                 , prefix + "shiftedPxup"                  + suffix );
+  iEvent.put( shiftedPxdown               , prefix + "shiftedPxdown"                  + suffix );
+  iEvent.put( shiftedPyup                 , prefix + "shiftedPyup"                  + suffix );
+  iEvent.put( shiftedPydown               , prefix + "shiftedPydown"                  + suffix );
 
   // Track information
 

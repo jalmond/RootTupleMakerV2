@@ -1,9 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 rootTupleMuons = cms.EDProducer("RootTupleMakerV2_Muons",
-    InputTag = cms.InputTag('cleanPatMuons'),
-    InputTagEnUp = cms.InputTag('shiftedAnalysisPatMuonsEnUp'),
-    InputTagEnDown = cms.InputTag('shiftedAnalysisPatMuonsEnDown'),
     TriggerEventInputTag = cms.InputTag ('patTriggerEvent'),                                
     Prefix = cms.string('Muon'),
     Suffix = cms.string(''),
@@ -25,9 +22,13 @@ rootTupleMuons = cms.EDProducer("RootTupleMakerV2_Muons",
     EMuTriggerMatch17     = cms.string ("cleanElectronTriggerMatchHLTSingleElectronemu17")
 )
 
+rootTupleMuonsLoose = rootTupleMuons.clone(
+    Prefix = cms.string('LooseMuon')
+)
+
 cleanMuonTriggerMatchHLTSingleMuon = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )          
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_Mu40_eta2p1_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -37,7 +38,7 @@ cleanMuonTriggerMatchHLTSingleMuon = cms.EDProducer(
 
 cleanMuonTriggerMatchHLTSingleMuon5 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_Mu5_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -47,7 +48,7 @@ cleanMuonTriggerMatchHLTSingleMuon5 = cms.EDProducer(
 
 cleanMuonTriggerMatchHLTSingleMuon8 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_Mu8_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -57,7 +58,7 @@ cleanMuonTriggerMatchHLTSingleMuon8 = cms.EDProducer(
 
 cleanMuonTriggerMatchHLTSingleMuon12 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_Mu12_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -68,7 +69,7 @@ cleanMuonTriggerMatchHLTSingleMuon12 = cms.EDProducer(
 
 cleanMuonTriggerMatchHLTSingleMuon17 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_Mu17_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -79,7 +80,7 @@ cleanMuonTriggerMatchHLTSingleMuon17 = cms.EDProducer(
 
 cleanMuonTriggerMatchHLTSingleMuon24 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_Mu24_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -90,7 +91,7 @@ cleanMuonTriggerMatchHLTSingleMuon24 = cms.EDProducer(
 
 cleanMuonTriggerMatchHLTSingleIsoMuon = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )          
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_IsoMu24_eta2p1_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -101,7 +102,7 @@ cleanMuonTriggerMatchHLTSingleIsoMuon = cms.EDProducer(
 
 cleanMuonTriggerMatchHLTDoubleMuon = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path ( "HLT_Mu17_TkMu8_v*" )' )
 , maxDeltaR = cms.double( 0.1 )
@@ -112,7 +113,7 @@ cleanMuonTriggerMatchHLTDoubleMuon = cms.EDProducer(
 
 cleanElectronTriggerMatchHLTSingleElectronemu8 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path( "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*")' )
 , maxDeltaR = cms.double( 0.1 )
@@ -124,7 +125,7 @@ cleanElectronTriggerMatchHLTSingleElectronemu8 = cms.EDProducer(
 
 cleanElectronTriggerMatchHLTSingleElectronemu17 = cms.EDProducer(
   "PATTriggerMatcherDRLessByR"
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuonsPF' )
 , matched = cms.InputTag( 'patTrigger' )
   , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path( "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*")')
 , maxDeltaR = cms.double( 0.1 )
@@ -133,3 +134,5 @@ cleanElectronTriggerMatchHLTSingleElectronemu17 = cms.EDProducer(
 , resolveByMatchQuality = cms.bool( True  )        # take best match found per reco object: by DeltaR here (s. above)                           
                                                                                                                                                                        
 )
+
+#  LocalWords:  rootTupleMuons

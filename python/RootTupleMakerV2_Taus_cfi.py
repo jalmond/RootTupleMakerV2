@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 rootTupleHPSTaus = cms.EDProducer("RootTupleMakerV2_Taus",
-                                  InputTag = cms.InputTag('cleanPatTaus'),
+                                  InputTag = cms.InputTag('selectedPatTausPF'),
                                   Prefix   = cms.string('HPSTau'),
                                   Suffix   = cms.string(''),
                                   VertexInputTag = cms.InputTag('offlinePrimaryVertices'),

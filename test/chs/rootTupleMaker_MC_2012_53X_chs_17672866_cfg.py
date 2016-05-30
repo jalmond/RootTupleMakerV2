@@ -35,7 +35,7 @@ process.TFileService = cms.Service("TFileService",
 
 process.source = cms.Source ("PoolSource",
                              fileNames=cms.untracked.vstring('file:/afs/cern.ch/work/j/jalmond/FE4C2F81-D0E1-E111-9080-0030487E0A2D.root'      ),
-                             skipEvents=cms.untracked.uint32(993)
+                             #skipEvents=cms.untracked.uint32(993)
                              )
 
 #----------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ process.GlobalTag.globaltag = 'START53_V22::All'
 
 # Events to process1
 
-process.maxEvents.input = 1
+process.maxEvents.input = -1
 
 process.readAK5PF    = cms.EDAnalyzer('JetCorrectorDBReader',  
         # below is the communication to the database 

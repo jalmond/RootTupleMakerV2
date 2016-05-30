@@ -41,7 +41,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   std::auto_ptr<bool >          isdata  ( new bool(iEvent.isRealData()));
 
-  std::cout << "Run and event =" <<  iEvent.id().run()         << "  " << iEvent.id().event()      << std::endl;
   // edm::Handle<double> rhoH;
   // iEvent.getByLabel(fastJetForIsolationInputTag,rhoH);
   // std::auto_ptr<double >        rhoIso  ( new double( *rhoH.product() ) );

@@ -4,7 +4,7 @@ rootTuplePFJets = cms.EDProducer("RootTupleMakerV2_PFJets",
     InputTag = cms.InputTag('selectedPatJetsAK5PF'),
     # InputTagL1Offset    = cms.InputTag('selectedPatJetsAK5PFL1Offset'),
     FastJetForJECInputTag       =cms.InputTag('kt6PFchsJets','rho'),
- #cms.InputTag('fixedGridRhoAll'),
+                                 #cms.InputTag('fixedGridRhoAll'),
                                  #
     InputTagSmearedUp   = cms.InputTag('smearedPatJetsAK5PFresUp'),                                 
     InputTagSmearedDown = cms.InputTag('smearedPatJetsAK5PFresDown'),                                 
