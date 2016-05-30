@@ -8,13 +8,7 @@ print '*' * 60
 isData=False
 runOnMC= not isData
 # list of input files                                                                                                                                           
-inputFiles = ['file:/afs/cern.ch/work/j/jalmond/FE4C2F81-D0E1-E111-9080-0030487E0A2D.root'] # overwritten, if "useRelVals" is 'True'                           
-maxEvents = 20 # reduce for testing, should be -1
-skipEvents=0
 
-outputFile = 'CH_submit_mc_53X.root'
-if isData:
-  outputFile = 'CH_submit_data_53X.root'
 
 ##############################################################################################################                                                             
 ##### PRINT CONGURATION
@@ -38,8 +32,6 @@ print '=' * 40
 print "Using Global Tag: "+GLOBALTAG
 
 
-# maximum number of events
-print "Running on "+str(maxEvents)+" events"
 
 ### Particle flow                                                                                                                                                      
 postfix = "PF"
@@ -64,11 +56,11 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 process.GlobalTag.globaltag = GLOBALTAG
 # Input files                                                                                                                                                             
-process.maxEvents.input = maxEvents
-#process.source.fileNames = inputFiles
+process.maxEvents.input = -1
+
 
 #### Load module for good vertex 
-process.load( "Leptoquarks.RootTupleMakerV2.patRefSel_goodVertex_cfi" )
+#process.load( "Leptoquarks.RootTupleMakerV2.patRefSel_goodVertex_cfi" )
 ########################################################################
 ### Check JECs
 ########################################################################
@@ -78,6 +70,20 @@ if not runOnMC:
 
 print "JEC = " + str(jecLevels)
 print '=' * 40
+
+from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
+
+process.goodOfflinePrimaryVertices = cms.EDFilter("PrimaryVertexObjectFilter",
+    filterParams = pvSelector.clone(
+    minNdof = cms.double(4.0),
+        maxZ = cms.double(24.0)
+    ),
+                                                  filter       = cms.bool( False ),
+                                                  src = cms.InputTag('offlinePrimaryVertices')
+                                                  )
+
+process.step0b = process.goodOfflinePrimaryVertices.clone( filter = True )
+
 
 
 ### Add in type - corrections
@@ -119,7 +125,6 @@ print "Finished setting up usePF2PAT"
 print '*' * 60
 
 postfixLoose='PFLoose'
-from PhysicsTools.PatAlgos.tools.pfTools import usePF2PAT
 usePF2PAT( process
          , runPF2PAT           = True
          , runOnMC             = runOnMC
@@ -285,6 +290,11 @@ print 'getattr(process,"pfNoTau"+postfix).enable = False'
 print 'getattr(process,"pfNoJet"+postfix).enable = True'
 
 
+getattr(process,"pfNoPileUp"+postfixLoose).enable = True
+getattr(process,"pfNoMuon"+postfixLoose).enable = True
+getattr(process,"pfNoElectron"+postfixLoose).enable = True
+getattr(process,"pfNoTau"+postfixLoose).enable = False
+getattr(process,"pfNoJet"+postfixLoose).enable = True
 
 
 ## LOADING Ntuple modules
@@ -292,7 +302,7 @@ process.load('Leptoquarks.RootTupleMakerV2.Ntuple_cff')
 
 # Output ROOT file                                                                                                                                                        
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string( outputFile)
+    fileName = cms.string( 'file.root')
 )
 
 # load the PAT trigger Python tools                                                                                                                                            
@@ -415,7 +425,11 @@ process.load("Leptoquarks.RootTupleMakerV2.metFilters_cfi")
 
 
 #----------------------------------------------------------------------------------------------------                                                            
+# Rerun full HPS sequence to fully profit from the fix of high pT taus                                                                                           
+#----------------------------------------------------------------------------------------------------                                                            
 
+process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
+#----------------------------------------------------------------------------------------------------                                                            
 # Modify cleanPatTaus (HPS Taus) - loosen up a bit                                                                                                               
 # http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/PatAlgos/python/cleaningLayer1/tauCleaner_cfi.py?revision=1.11&view=markup                       
 #----------------------------------------------------------------------------------------------------                                                            
@@ -759,7 +773,7 @@ process.LJFilter.electronsMin = 1
 process.LJFilter.elecPT       = 15.0
 process.LJFilter.tausMin = 1
 process.LJFilter.tauPT   = 15.0
-process.LJFilter.jetsMin = 0
+process.LJFilter.jetsMin = 2
 process.LJFilter.jetPT   = 20.0
 process.LJFilter.counteitherleptontype = True
 process.LJFilter.customfilterEMuTauJet2012 = False
@@ -859,6 +873,7 @@ process.load ('Leptoquarks.LeptonJetGenTools.genTauMuElFromWs_cfi')
 
 process.p = cms.Path(
   process.goodOfflinePrimaryVertices*
+  process.step0b*
   process.eidMVASequence*
   process.genTausFromWs*
   process.genMuonsFromWs*
@@ -870,17 +885,10 @@ process.p = cms.Path(
   process.pdfWeights*
   ## HEEP electron ID                                                                                                                                          
   process.HEEPId*
-  # MVA electron ID                                                                                                                                            
-  process.eidMVASequence*
-  # HEEP rho for isolation correction                                                                                                                          
   process.kt6PFJetsForHEEPIsolation*
   # Good vertices                                                                                                                                              
   process.goodVertices*
-  # PFMET corrections                                                                                                                                          
-  #process.type0PFMEtCorrection*
-  #process.patPFMETtype0Corr*
- # process.producePFMETCorrections*
-  #process.pfMEtSysShiftCorrSequencePF*
+
   # MET filters (required):                                                                                                                                    
   process.EcalDeadCellTriggerPrimitiveFilter*
   process.EcalDeadCellBoundaryEnergyFilter*
@@ -890,10 +898,7 @@ process.p = cms.Path(
   process.ecalLaserCorrFilter*
   getattr( process, 'patPF2PATSequence' + postfix )*
   getattr( process, 'patPF2PATSequence' + postfixLoose )*
-  #process.looseLeptonSequence * 
-  getattr( process, 'intermediatePatElectrons' + postfix )*
-  #process.smearedAnalysisPatJets*
-  #process.smearedPatPFMetSequencePF*
+
   process.smearedJetsResDown*
   process.smearedJetsResUp*
   process.shiftedJetsEnDown*
@@ -904,7 +909,6 @@ process.p = cms.Path(
   process.muonsEnDown*
   process.RawMET*
   process.pfMEtSysShiftCorrSequencePF*
-  #process.smearedPatPFMetSequencePF*
   process.patType1CorrectedPFMetType1OnlyPF*
   process.patType1CorrectedPFMetType01OnlyPF*
   process.patType1CorrectedPFMetType01XYOnlyPF*
@@ -938,16 +942,7 @@ process.p = cms.Path(
     # MET objects for systematics                                                                                                                                
     process.rootTuplePFMETType01XYCorUnclusteredUp+
     process.rootTuplePFMETType01XYCorUnclusteredDown+
-    #process.rootTuplePFMETType01XYCorElectronEnUp+
-    #process.rootTuplePFMETType01XYCorElectronEnDown+
-    #process.rootTuplePFMETType01XYCorMuonEnDown+
-    #process.rootTuplePFMETType01XYCorMuonEnUp+
-    #process.rootTuplePFMETType01XYCorTauEnUp+
-    #process.rootTuplePFMETType01XYCorTauEnDown+
-    #process.rootTuplePFMETType01XYCorJetResUp+
-    #process.rootTuplePFMETType01XYCorJetResDown+
-    #process.rootTuplePFMETType01XYCorJetEnUp+
-    #process.rootTuplePFMETType01XYCorJetEnDown+
+
     ## Trigger objects                                                                                                                                           
     process.rootTupleTrigger+
     process.rootTupleTriggerObjects+

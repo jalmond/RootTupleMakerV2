@@ -58,7 +58,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 process.GlobalTag.globaltag = 'FT53_V21A_AN6::All'
 
 # Input files                                                                                                                                                             
-process.maxEvents.input = 50
+process.maxEvents.input = -1
 #process.source.fileNames = inputFiles
 
 #### Load module for good vertex 
@@ -78,13 +78,12 @@ process.goodOfflinePrimaryVertices = cms.EDFilter("PrimaryVertexObjectFilter",
     filterParams = pvSelector.clone(
         minNdof = cms.double(4.0),
         maxZ = cms.double(24.0)
-    ),
+        ),
                                                   filter       = cms.bool( False ),
                                                   src = cms.InputTag('offlinePrimaryVertices')
                                                   )
 
 process.step0b = process.goodOfflinePrimaryVertices.clone( filter = True )
-
 
 
 ### Add in type - corrections
@@ -117,7 +116,7 @@ print "Finished setting up usePF2PAT"
 print '*' * 60
 
 postfixLoose='PFLoose'
-from PhysicsTools.PatAlgos.tools.pfTools import usePF2PAT
+
 usePF2PAT( process
          , runPF2PAT           = True
          , runOnMC             = runOnMC
@@ -282,7 +281,11 @@ print 'getattr(process,"pfNoElectron"+postfix).enable = True'
 print 'getattr(process,"pfNoTau"+postfix).enable = False'
 print 'getattr(process,"pfNoJet"+postfix).enable = True'
 
-
+getattr(process,"pfNoPileUp"+postfixLoose).enable = True
+getattr(process,"pfNoMuon"+postfixLoose).enable = True
+getattr(process,"pfNoElectron"+postfixLoose).enable = True
+getattr(process,"pfNoTau"+postfixLoose).enable = False
+getattr(process,"pfNoJet"+postfixLoose).enable = True
 
 
 ## LOADING Ntuple modules
@@ -334,7 +337,7 @@ process.out.outputCommands += [ 'keep edmTriggerResults_*_*_*'
                               , 'keep *_goodOfflinePrimaryVertices*_*_*'
                               ]
 
-process.out.outputCommands += ['drop *_hpsPFTauDiscrimination_*_*']
+#process.out.outputCommands += ['drop *_hpsPFTauDiscrimination_*_*']
                                
 
 ###
@@ -414,7 +417,13 @@ process.kt6PFJetsForHEEPIsolation.Rho_EtaMax = cms.double(2.5)
 
 process.load("Leptoquarks.RootTupleMakerV2.metFilters_cfi")
 
+#----------------------------------------------------------------------------------------------------                                                                
+# Rerun full HPS sequence to fully profit from the fix of high pT taus         
+                                                                                   
+#----------------------------------------------------------------------------------------------------                                                                
 
+process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
+#---------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------                                                            
 # Rerun full HPS sequence to fully profit from the fix of high pT taus                                                                                           
 #----------------------------------------------------------------------------------------------------                                                            
@@ -422,6 +431,15 @@ process.load("Leptoquarks.RootTupleMakerV2.metFilters_cfi")
 getattr( process, 'selectedPatTaus' + postfix ).cut = cms.string("pt > 10. && tauID('decayModeFinding')> 0.5")
 getattr( process, 'selectedPatTaus' + postfix ).preselection = cms.string(' tauID("decayModeFinding") > 0.5 ')
 getattr( process, 'selectedPatTaus' + postfix ).finalCut     = cms.string(' pt > 15.0 & abs(eta) < 2.5      ')
+
+#----------------------------------------------------------------------------------------------------                                                                
+# Add Tau ID sources (HPS Taus)                                                   
+                                                                                   
+#----------------------------------------------------------------------------------------------------                                                                
+
+from PhysicsTools.PatAlgos.tools.tauTools import *
+switchToPFTauHPS(process)
+
 
 #----------------------------------------------------------------------------------------------------                                                            
 # Add the HEEP ID bit to the electrons                                                                                                                           
@@ -444,6 +462,16 @@ getattr( process, 'patElectrons' + postfixLoose ).electronIDSources = electronID
 getattr( process, 'patElectrons' + postfixLoose ).userData.userInts.src = cms.VInputTag('HEEPId')
 
 ######################################## 
+
+process.analysisPatTaus = process.selectedPatTausPF.clone()
+process.analysisPatTaus.preselection = cms.string(
+    'tauID("decayModeFinding") > 0.5 &'
+    ' tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits") > 0.5 &'
+    ' tauID("againstMuonLoose3") > 0.5 &'
+    ' tauID("againstElectronLooseMVA3") > 0.5'
+)
+process.analysisPatTaus.finalCut = cms.string('pt > 20. & abs(eta) < 2.3')
+process.patPF2PATSequencePF.replace( process.selectedPatTausPF, process.selectedPatTausPF +process.analysisPatTaus)
 
 
 
@@ -611,20 +639,15 @@ process.p = cms.Path(
   process.goodOfflinePrimaryVertices*
   process.step0b*
   process.eidMVASequence*
-  # pdf weights                                                                                                                                                
-  ## HEEP electron ID                                                                                                                                          
+
   process.HEEPId*
   # MVA electron ID                                                                                                                                            
-  process.eidMVASequence*
+
   # HEEP rho for isolation correction                                                                                                                          
   process.kt6PFJetsForHEEPIsolation*
   # Good vertices                                                                                                                                              
   process.goodVertices*
   # PFMET corrections                                                                                                                                          
-  #process.type0PFMEtCorrection*
-  #process.patPFMETtype0Corr*
- # process.producePFMETCorrections*
-  #process.pfMEtSysShiftCorrSequencePF*
   # MET filters (required):                                                                                                                                    
   process.EcalDeadCellTriggerPrimitiveFilter*
   process.EcalDeadCellBoundaryEnergyFilter*
@@ -634,7 +657,7 @@ process.p = cms.Path(
   process.ecalLaserCorrFilter*
   getattr( process, 'patPF2PATSequence' + postfix )*
   getattr( process, 'patPF2PATSequence' + postfixLoose )*
-  #process.looseLeptonSequence * 
+
   process.RawMET*
   process.pfMEtSysShiftCorrSequencePF*
   process.patType1CorrectedPFMetType1OnlyPF*
@@ -646,7 +669,7 @@ process.p = cms.Path(
     # Run PAT conversions for electrons                                                                                                                          
   process.patConversions*
   # Re-run full HPS sequence to fully profit from the fix of high pT taus                                                                                      
-  #process.recoTauClassicHPSSequence*
+  process.recoTauClassicHPSSequence*
   (
    # Event information                                                                                                                                          
     process.rootTupleEvent+
@@ -669,16 +692,7 @@ process.p = cms.Path(
     # MET objects for systematics                                                                                                                                
     process.rootTuplePFMETType01XYCorUnclusteredUp+
     process.rootTuplePFMETType01XYCorUnclusteredDown+
-    #process.rootTuplePFMETType01XYCorElectronEnUp+
-    #process.rootTuplePFMETType01XYCorElectronEnDown+
-    #process.rootTuplePFMETType01XYCorMuonEnDown+
-    #process.rootTuplePFMETType01XYCorMuonEnUp+
-    #process.rootTuplePFMETType01XYCorTauEnUp+
-    #process.rootTuplePFMETType01XYCorTauEnDown+
-    #process.rootTuplePFMETType01XYCorJetResUp+
-    #process.rootTuplePFMETType01XYCorJetResDown+
-    #process.rootTuplePFMETType01XYCorJetEnUp+
-    #process.rootTuplePFMETType01XYCorJetEnDown+
+
     ## Trigger objects                                                                                                                                           
     process.rootTupleTrigger+
     process.rootTupleTriggerObjects
