@@ -231,7 +231,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
-process.load("Leptoquarks.RootTupleMakerV2.ak5PFchsJets_cff")
+process.load("Leptoquarks.RootTupleMakerV2.NonPF2PAT.ak5PFchsJets_cff")
 #cms.Sequence() += process.ak5PFchsJetsSequence
 
 addJetCollection(process,cms.InputTag('ak5PFchsJets'),

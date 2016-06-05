@@ -228,7 +228,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
-process.load("Leptoquarks.RootTupleMakerV2.ak5PFchsJets_cff")
+process.load("Leptoquarks.RootTupleMakerV2.NonPF2PAT.ak5PFchsJets_cff")
 #cms.Sequence() += process.ak5PFchsJetsSequence
 
 addJetCollection(process,cms.InputTag('ak5PFchsJets'),
@@ -423,16 +423,6 @@ process.rootTuplePFJets.InputTagScaledDown  =  cms.InputTag('cleanPatJetsAK5PFch
 # Set Lepton-Gen Matching Parameters
 #----------------------------------------------------------------------------------------------------
 
-process.load("Leptoquarks.RootTupleMakerV2.leptonGenMatching_cfi")
-process.patDefaultSequence.replace( process.electronMatch, process.elMatch )
-process.patElectrons.genParticleMatch = cms.VInputTag( cms.InputTag("elMatch") )
-process.patDefaultSequence.replace( process.muonMatch, process.muMatch )
-process.patMuons.genParticleMatch = cms.VInputTag( cms.InputTag("muMatch") )
-process.patDefaultSequence.replace( process.tauMatch, process.tauLepMatch )
-process.patTaus.genParticleMatch = cms.VInputTag( cms.InputTag("tauLepMatch") )
-process.patDefaultSequence.replace( process.tauGenJetMatch, process.tauJetMatch )
-process.patTaus.genJetMatch = cms.InputTag("tauJetMatch")
-
 #----------------------------------------------------------------------------------------------------
 # Lepton + Jets filter
 #----------------------------------------------------------------------------------------------------
@@ -493,16 +483,13 @@ process.rootTupleTree = cms.EDAnalyzer("RootTupleMakerV2_Tree",
         # Single objects
         'keep *_rootTuplePFCandidates_*_*',
         'keep *_rootTuplePFJets_*_*',
-        'keep *_rootTupleCaloJets_*_*',
         'keep *_rootTupleElectrons_*_*',
         'keep *_rootTupleMuons_*_*',
         'keep *_rootTupleHPSTaus_*_*',
         'keep *_rootTuplePhotons_*_*',
         'keep *_rootTupleVertex_*_*',
         # MET objects for analysis
-        'keep *_rootTupleTCMET_*_*',
-        'keep *_rootTupleCaloMET_*_*',
-        'keep *_rootTupleCaloMETType1Cor_*_*',
+
         'keep *_rootTuplePFMET_*_*',
         'keep *_rootTuplePFMETType1Cor_*_*',
         'keep *_rootTuplePFMETType01Cor_*_*',
@@ -607,16 +594,13 @@ process.p = cms.Path(
     # Single objects
     process.rootTuplePFCandidates+
     process.rootTuplePFJets+
-    process.rootTupleCaloJets+
     process.rootTupleElectrons+
     process.rootTupleMuons+
     process.rootTupleHPSTaus+
     process.rootTuplePhotons+
     process.rootTupleVertex+
     # MET objects for analysis
-    process.rootTupleTCMET+
-    process.rootTupleCaloMET+
-    process.rootTupleCaloMETType1Cor+
+
     process.rootTuplePFMET+
     process.rootTuplePFMETType1Cor+
     process.rootTuplePFMETType01Cor+
