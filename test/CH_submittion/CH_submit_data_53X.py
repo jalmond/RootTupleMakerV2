@@ -403,6 +403,7 @@ process.MessageLogger.cerr.default.limit = 10
 print "TEST"
 #Input files
 process.source.fileNames = [
+  'root://xrootd.unl.edu//store/data/Run2012A/SingleMu/AOD/22Jan2013-v1/20000/002F5062-346F-E211-BF00-1CC1DE04DF20.root',
   'root://xrootd.unl.edu//store/data/Run2012A/SingleMu/AOD/22Jan2013-v1/20000/002F5062-346F-E211-BF00-1CC1DE04DF20.root'
 ]
 

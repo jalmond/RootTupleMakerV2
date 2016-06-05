@@ -773,7 +773,7 @@ process.LJFilter.electronsMin = 1
 process.LJFilter.elecPT       = 15.0
 process.LJFilter.tausMin = 1
 process.LJFilter.tauPT   = 15.0
-process.LJFilter.jetsMin = 2
+process.LJFilter.jetsMin = 0
 process.LJFilter.jetPT   = 20.0
 process.LJFilter.counteitherleptontype = True
 process.LJFilter.customfilterEMuTauJet2012 = False
@@ -915,7 +915,7 @@ process.p = cms.Path(
   process.metUncertaintySequence*
   process.patType1CorrectedPFMetType01XYOnlyPFUnclustup*
   process.patType1CorrectedPFMetType01XYOnlyPFUnclustdown*
-  process.LJFilter*
+  #process.LJFilter*
     # Run PAT conversions for electrons                                                                                                                          
   process.patConversions*
     # Re-run full HPS sequence to fully profit from the fix of high pT taus                                                                                      

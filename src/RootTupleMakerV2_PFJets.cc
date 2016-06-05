@@ -11,7 +11,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "CMGTools/External/interface/PileupJetIdentifier.h"
+//#include "CMGTools/External/interface/PileupJetIdentifier.h"
 
 RootTupleMakerV2_PFJets::RootTupleMakerV2_PFJets(const edm::ParameterSet& iConfig) :
 
