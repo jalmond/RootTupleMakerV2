@@ -29,4 +29,5 @@ for i in list_to_submit:
     configfile.write(make_submitfile(i,dataset,dataset_postfix,version, tag) )
     
     print "dataset=" + dataset           
-    
+    print "submit with : crab submit -c " + cfgfile
+    print "check status with : crab status -d crab_projectsMC/LQ_CH_"+version+"_June2016_MC_"+i+"analysis"
