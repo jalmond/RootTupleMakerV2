@@ -16,9 +16,10 @@ def make_submitfile(jobid, dataset, dataset_postfix, version, tag):
     config+="config.Data.inputDataset = '/"+dataset+dataset_postfix+"'\n"
     config+="config.Data.inputDBS = 'global'\n"
     config+="config.Data.splitting = 'FileBased'\n"
-    config+='config.Data.unitsPerJob = 5\n'
+    config+='config.Data.unitsPerJob = 1\n'
     config+="config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())\n"
     config+='config.Data.publication = True\n'
     config+="config.Data.outputDatasetTag = '"+tag+"_"+dataset+"'\n"
+    config+="config.Site.blacklist = ['T2_ES_IFCA','T2_IT_Legnaro']\n"
     config+="config.Site.storageSite = 'T3_KR_KISTI'\n"
     return config

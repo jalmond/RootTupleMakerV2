@@ -39,7 +39,7 @@ postfix = "PF"
 typeIMetCorrections = True
 
 # event frequency of Fwk report
-fwkReportEvery = 1000
+fwkReportEvery = 10
 
 # switch for 'TrigReport'/'TimeReport' at job end
 wantSummary = True
