@@ -35,8 +35,21 @@ vtxInputTag(iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "Eta" + suffix );
 	produces <std::vector<double> > ( prefix + "Phi" + suffix );
 	produces <std::vector<double> > ( prefix + "Pt" + suffix );
+	produces <std::vector<double> > ( prefix + "Px" + suffix );
+	produces <std::vector<double> > ( prefix + "Py" + suffix );
+	
 	produces <std::vector<double> > ( prefix + "SmearedUpPt" + suffix );
 	produces <std::vector<double> > ( prefix + "SmearedDownPt" + suffix );
+	produces <std::vector<double> > ( prefix + "SmearedUpPx" + suffix );
+	produces <std::vector<double> > ( prefix + "SmearedDownPx" + suffix );
+	produces <std::vector<double> > ( prefix + "ScaledUpPx" + suffix );
+	produces <std::vector<double> > ( prefix + "ScaledDownPx" + suffix );
+	
+	produces <std::vector<double> > ( prefix + "SmearedUpPy" + suffix );
+	produces <std::vector<double> > ( prefix + "SmearedDownPy" + suffix );
+	produces <std::vector<double> > ( prefix + "ScaledUpPy" + suffix );
+	produces <std::vector<double> > ( prefix + "ScaledDownPy" + suffix );
+
 	produces <std::vector<double> > ( prefix + "ScaledUpPt" + suffix );
 	produces <std::vector<double> > ( prefix + "ScaledDownPt" + suffix );
 	produces <std::vector<double> > ( prefix + "PtRaw" + suffix );
@@ -127,10 +140,22 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  eta  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  phi  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  pt  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  px  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  py  ( new std::vector<double>()  );
+
 	std::auto_ptr<std::vector<double> >  ptSmearedUp  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptSmearedDown  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptScaledUp  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  ptScaledDown  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pxSmearedUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pxSmearedDown  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pxScaledUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pxScaledDown  ( new std::vector<double>()  );
+	
+	std::auto_ptr<std::vector<double> >  pySmearedUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pySmearedDown  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pyScaledUp  ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  pyScaledDown  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energySmearedUp  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energySmearedDown  ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  energyScaledUp  ( new std::vector<double>()  );
@@ -289,7 +314,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  {
 		    ijet++;
 		        // Only look at jets with pt>=20 GeV
-   		        if( it->pt()< 0. ) 
+   		        if( it->pt()< 10. ) 
 			        continue;
 			
 			// exit from loop when you reach the required number of jets
@@ -539,30 +564,40 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			eta->push_back( it->eta() );
 			phi->push_back( it->phi() );
 			pt->push_back( it->pt() );
-
+			px->push_back( it->px() );
+		        py->push_back( it->py() );
 			if ( !iEvent.isRealData() ) { 
 			  
 			  if ( jetsSmearedUp.isValid() ){
 			    it_smearedUp = jetsSmearedUp -> begin() + ijet;
 			    ptSmearedUp -> push_back ( it_smearedUp -> pt() );
+			    pxSmearedUp -> push_back ( it_smearedUp -> px() );
+			    pySmearedUp -> push_back ( it_smearedUp -> py() );
+
 			    energySmearedUp -> push_back ( it_smearedUp -> energy() );
 			  }
 			  
 			  if ( jetsSmearedDown.isValid() ){
 			    it_smearedDown = jetsSmearedDown -> begin() + ijet;
 			    ptSmearedDown -> push_back ( it_smearedDown -> pt() );
+			    pxSmearedDown -> push_back ( it_smearedDown -> px() );
+			    pySmearedDown -> push_back ( it_smearedDown -> py() );
 			    energySmearedDown -> push_back ( it_smearedDown -> energy() );
 			  }
 			  
 			  if ( jetsScaledUp.isValid() ){
 			    it_scaledUp = jetsScaledUp -> begin() + ijet;
 			    ptScaledUp -> push_back ( it_scaledUp -> pt() );
+			    pxScaledUp -> push_back ( it_scaledUp -> px() );
+			    pyScaledUp -> push_back ( it_scaledUp -> py() );
 			    energyScaledUp -> push_back ( it_scaledUp -> energy() );
 			  }
 			  
 			  if ( jetsScaledDown.isValid() ){
 			    it_scaledDown = jetsScaledDown -> begin() + ijet;
 			    ptScaledDown -> push_back ( it_scaledDown -> pt() );
+			    pxScaledDown -> push_back ( it_scaledDown -> px() );
+			    pyScaledDown -> push_back ( it_scaledDown -> py() );
 			    energyScaledDown -> push_back ( it_scaledDown -> energy() );
 			  }
 			}
@@ -724,6 +759,19 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( eta, prefix + "Eta" + suffix );
 	iEvent.put( phi, prefix + "Phi" + suffix );
 	iEvent.put( pt, prefix + "Pt" + suffix );
+	iEvent.put( px, prefix + "Px" + suffix );
+        iEvent.put( py, prefix + "Py" + suffix );
+	
+	iEvent.put( pxSmearedUp, prefix + "SmearedUpPx" + suffix );
+	iEvent.put( pxSmearedDown, prefix + "SmearedDownPx" + suffix );
+       
+	iEvent.put( pySmearedUp, prefix + "SmearedUpPy" + suffix );
+	iEvent.put( pySmearedDown, prefix + "SmearedDownPy" + suffix );
+	iEvent.put( pxScaledUp, prefix + "ScaledUpPx" + suffix );
+	iEvent.put( pxScaledDown, prefix + "ScaledDownPx" + suffix );
+	iEvent.put( pyScaledUp, prefix + "ScaledUpPy" + suffix );
+	iEvent.put( pyScaledDown, prefix + "ScaledDownPy" + suffix );
+
 	iEvent.put( ptSmearedUp, prefix + "SmearedUpPt" + suffix );
 	iEvent.put( ptSmearedDown, prefix + "SmearedDownPt" + suffix );
 	iEvent.put( ptScaledUp, prefix + "ScaledUpPt" + suffix );

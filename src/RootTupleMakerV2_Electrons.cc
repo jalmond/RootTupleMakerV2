@@ -74,6 +74,9 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
   produces <std::vector<double> > ( prefix + "Eta"                      + suffix );
   produces <std::vector<double> > ( prefix + "Phi"                      + suffix );
   produces <std::vector<double> > ( prefix + "Pt"                       + suffix );
+  produces <std::vector<double> > ( prefix + "Px"                       + suffix );
+  produces <std::vector<double> > ( prefix + "Py"                       + suffix );
+
   produces <std::vector<double> > ( prefix + "PtHeep"                   + suffix );
   produces <std::vector<double> > ( prefix + "Energy"                   + suffix );
   produces <std::vector<double> > ( prefix + "CaloEnergy"               + suffix );
@@ -187,6 +190,11 @@ RootTupleMakerV2_Electrons::RootTupleMakerV2_Electrons(const edm::ParameterSet& 
 
   produces <std::vector<double> > ( prefix + "shiftedEup"                    + suffix );
   produces <std::vector<double> > ( prefix + "shiftedEdown"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedPxup"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedPxdown"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedPyup"                    + suffix );
+  produces <std::vector<double> > ( prefix + "shiftedPydown"                    + suffix );
+  
 
   // Track information
 
@@ -245,6 +253,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::auto_ptr<std::vector<double> >  eta                       ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  phi                       ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  pt                        ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  px                        ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  py                        ( new std::vector<double>()  );
+
   std::auto_ptr<std::vector<double> >  ptHeep                    ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  energy                    ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  caloEnergy                ( new std::vector<double>()  );
@@ -357,6 +368,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //shiftedEup
   std::auto_ptr<std::vector<double> >  shiftedEup                ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  shiftedEdown              ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedPxup                ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedPxdown              ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedPyup                ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  shiftedPydown              ( new std::vector<double>()  );
+
   
   // Track information 
 
@@ -445,10 +461,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //edm::Handle<std::vector<pat::Electron> > anal_electrons;
   //iEvent.getByLabel("analysisPatElectrons", anal_electrons);
 
-
-  edm::Handle<edm::View<pat::Electron> > shiftedEnDownSrc;
-  edm::Handle<edm::View<pat::Electron> > shiftedEnUpSrc;
-
+  
+  edm::Handle<std::vector<pat::Electron> >  shiftedEnDownSrc;
+  edm::Handle<std::vector<pat::Electron> > shiftedEnUpSrc;
+  std::vector<pat::Electron>::const_iterator it_shiftedUp;
+  std::vector<pat::Electron>::const_iterator it_shiftedDown;
   iEvent.getByLabel(inputTagEnDown, shiftedEnDownSrc);
   iEvent.getByLabel(inputTagEnUp, shiftedEnUpSrc);
   
@@ -510,9 +527,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     edm::LogInfo("RootTupleMakerV2_ElectronsInfo") << "Total # Electrons: " << electrons->size();
 
     size_t iElectron = 0;
-    int iEl=0;
+    int iEl=-1;
     for( std::vector<pat::Electron>::const_iterator it = electrons->begin(); it != electrons->end(); ++it ) {
-
+      
+      iEl++;
       //------------------------------------------------------------------------
       // Break from the loop once we have enough electrons
       //------------------------------------------------------------------------
@@ -649,19 +667,37 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	  }
 	}
 	
-	for(unsigned int i_el=0; i_el < shiftedEnUpSrc->size(); i_el++){
-	  if(fabs(it->eta() - shiftedEnUpSrc->at(i_el).eta()) < 0.1){
-	    if(fabs(it->phi() - shiftedEnUpSrc->at(i_el).phi()) < 0.1){
-	      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
-	      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
-	    }
-	  }
+	if ( shiftedEnUpSrc.isValid() ){
+	  it_shiftedUp = shiftedEnUpSrc -> begin() + iEl;
+	  shiftedEup                -> push_back ( it_shiftedUp->pt() );
+	  shiftedPxup                -> push_back ( it_shiftedUp->px() );
+	  shiftedPyup                -> push_back ( it_shiftedUp->py() );
+	  
+	}
+	else{
+	  shiftedEup                -> push_back ( it->pt());
+	  shiftedPxup                -> push_back ( it->px());
+	  shiftedPyup                -> push_back ( it->py());
+	}
+	if ( shiftedEnDownSrc.isValid() ){
+	  it_shiftedDown = shiftedEnUpSrc -> begin() + iEl;
+	  shiftedEdown                -> push_back ( it_shiftedDown->pt() );
+	  shiftedPxdown                -> push_back ( it_shiftedDown->px() );
+	  shiftedPydown                -> push_back ( it_shiftedDown->py() );
+	}
+	else{
+	  shiftedEdown                -> push_back ( it->pt());
+	  shiftedPxdown                -> push_back ( it->px());
+	  shiftedPydown                -> push_back ( it->py());
 	}
       }
       else{
-	
-        shiftedEup                -> push_back ( 0.);
-        shiftedEdown               -> push_back ( 0.);
+	shiftedEup                -> push_back ( it->pt());
+	shiftedPxup                -> push_back ( it->px());
+	shiftedPyup                -> push_back ( it->py());
+	shiftedEdown                -> push_back ( it->pt());
+	shiftedPxdown                -> push_back ( it->px());
+	shiftedPydown                -> push_back ( it->py());
       }
       
       matchedGenParticlePt  -> push_back ( (double)(genPartPt ) );
@@ -760,6 +796,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       eta                      -> push_back ( it->eta() );
       phi                      -> push_back ( it->phi() );
       pt                       -> push_back ( it->pt() );
+      px                       -> push_back ( it->px() );
+      py                       -> push_back ( it->py() );
+
       ptHeep                   -> push_back ( it->caloEnergy()*sin(it->p4().theta()) );
       energy                   -> push_back ( it->energy() );
       caloEnergy               -> push_back ( it->caloEnergy() );
@@ -888,7 +927,6 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
       ++iElectron;
-      ++iEl;
     }
   } else {
     edm::LogError("RootTupleMakerV2_ElectronsError") << "Error! Can't get the product " << inputTag;
@@ -903,6 +941,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put( eta                     , prefix + "Eta"                      + suffix );
   iEvent.put( phi                     , prefix + "Phi"                      + suffix );
   iEvent.put( pt                      , prefix + "Pt"                       + suffix );
+  iEvent.put( px                      , prefix + "Px"                       + suffix );
+  iEvent.put( py                      , prefix + "Py"                       + suffix );
   iEvent.put( ptHeep                  , prefix + "PtHeep"                   + suffix );
   iEvent.put( energy                  , prefix + "Energy"                   + suffix );
   iEvent.put( caloEnergy              , prefix + "CaloEnergy"               + suffix );
@@ -1016,6 +1056,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Energy shift
   iEvent.put( shiftedEup                 , prefix + "shiftedEup"                  + suffix );
   iEvent.put( shiftedEdown               , prefix + "shiftedEdown"                  + suffix );
+  iEvent.put( shiftedPxup                 , prefix + "shiftedPxup"                  + suffix );
+  iEvent.put( shiftedPxdown               , prefix + "shiftedPxdown"                  + suffix );
+  iEvent.put( shiftedPyup                 , prefix + "shiftedPyup"                  + suffix );
+  iEvent.put( shiftedPydown               , prefix + "shiftedPydown"                  + suffix );
 
 
   // Track information

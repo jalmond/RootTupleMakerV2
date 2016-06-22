@@ -47,6 +47,9 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 	produces <std::vector<double> > ( prefix + "Eta"                     + suffix );
 	produces <std::vector<double> > ( prefix + "Phi"                     + suffix );
 	produces <std::vector<double> > ( prefix + "Pt"                      + suffix );
+	produces <std::vector<double> > ( prefix + "Px"                      + suffix );
+	produces <std::vector<double> > ( prefix + "Py"                      + suffix );
+
 	produces <std::vector<double> > ( prefix + "GlobalEta"                     + suffix );
         produces <std::vector<double> > ( prefix + "GlobalPhi"                     + suffix );
         produces <std::vector<double> > ( prefix + "GlobalPt"                      + suffix );
@@ -128,6 +131,10 @@ vtxInputTag       (iConfig.getParameter<edm::InputTag>("VertexInputTag"))
 
 	produces <std::vector<double> > ( prefix + "shiftedEup"                    + suffix );
 	produces <std::vector<double> > ( prefix + "shiftedEdown"                    + suffix );
+	produces <std::vector<double> > ( prefix + "shiftedPyup"                    + suffix );
+	produces <std::vector<double> > ( prefix + "shiftedPydown"                    + suffix );
+	produces <std::vector<double> > ( prefix + "shiftedPxup"                    + suffix );
+	produces <std::vector<double> > ( prefix + "shiftedPxdown"                    + suffix );
 	//
 	// New variables added based on CMSSW 52X recommendations for LooseMuon and TightMuon Definitions
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Basline_muon_selections_for_2012
@@ -204,6 +211,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr<std::vector<double> >  eta                     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  phi                     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  pt                      ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  px                      ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  py                      ( new std::vector<double>()  );
+	
 	std::auto_ptr<std::vector<double> >  globaleta                     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  globalphi                     ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  globalpt                      ( new std::vector<double>()  );
@@ -257,7 +267,10 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	//shiftedEup                                                                                                                                                                                                                                            
 	std::auto_ptr<std::vector<double> >  shiftedEup                ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  shiftedEdown              ( new std::vector<double>()  );
-
+	std::auto_ptr<std::vector<double> >  shiftedPxup                ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  shiftedPxdown              ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  shiftedPyup                ( new std::vector<double>()  );
+	std::auto_ptr<std::vector<double> >  shiftedPydown              ( new std::vector<double>()  );
 	//
 	std::auto_ptr<std::vector<double> >  pfisor03chargedhadron   ( new std::vector<double>()  );
 	std::auto_ptr<std::vector<double> >  pfisor03chargedparticle ( new std::vector<double>()  );
@@ -351,9 +364,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 
-	edm::Handle<edm::View<pat::Muon> > shiftedEnDownSrc;
-	edm::Handle<edm::View<pat::Muon> > shiftedEnUpSrc;
+	edm::Handle<std::vector<pat::Muon> > shiftedEnDownSrc;
+	edm::Handle<std::vector<pat::Muon> > shiftedEnUpSrc;
 
+	std::vector<pat::Muon>::const_iterator it_shiftedUp;
+	 std::vector<pat::Muon>::const_iterator it_shiftedDown;
 	iEvent.getByLabel(inputTagEnDown, shiftedEnDownSrc);
 	iEvent.getByLabel(inputTagEnUp, shiftedEnUpSrc);
 
@@ -377,7 +392,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		edm::LogInfo("RootTupleMakerV2_MuonsInfo") << "Total # Muons: " << muons->size();
 
 		size_t iMuon = 0;
-		int imu=0;
+		int imu=-1;
 		for( std::vector<pat::Muon>::const_iterator it = muons->begin(); it != muons->end(); ++it )
 		{
 
@@ -407,18 +422,41 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 					genparPhi=it->genParticle(igen)->phi();
 				}
 				
-				for(unsigned int i_el=0; i_el < shiftedEnUpSrc->size(); i_el++){
-				  if(fabs(it->eta() - shiftedEnUpSrc->at(i_el).eta()) < 0.1){
-				    if(fabs(it->phi() - shiftedEnUpSrc->at(i_el).phi()) < 0.1){
-				      shiftedEup                -> push_back ( shiftedEnUpSrc->at(i_el).pt() );
-				      shiftedEdown               -> push_back ( shiftedEnDownSrc->at(i_el).pt() );
-				    }   
-				  }
+				
+				if ( shiftedEnUpSrc.isValid() ){
+				  it_shiftedUp = shiftedEnUpSrc-> begin() + imu;
+				  shiftedEup                -> push_back ( it_shiftedUp->pt() );
+				  shiftedPxup                -> push_back ( it_shiftedUp->px() );
+				  shiftedPyup                -> push_back ( it_shiftedUp->py() );
 				}
+				else{
+				  shiftedEup                -> push_back ( it->pt() );
+				  shiftedPxup                -> push_back ( it->px() );
+				  shiftedPyup                -> push_back ( it->py() );
+				}
+				if ( shiftedEnDownSrc.isValid() ){
+				  it_shiftedDown = shiftedEnDownSrc-> begin() + imu;
+				  shiftedEdown                -> push_back ( it_shiftedDown->pt() );
+				  shiftedPxdown                -> push_back ( it_shiftedDown->px() );
+				  shiftedPydown                -> push_back ( it_shiftedDown->py() );
+				}
+				else{
+				  shiftedEdown                -> push_back ( it->pt() );
+				  shiftedPxdown                -> push_back ( it->px() );
+				  shiftedPydown                -> push_back ( it->py() );
+				}
+				
+				
 			}
-			else {
-			  shiftedEup                -> push_back ( 0.);
-			  shiftedEdown               -> push_back ( 0.);
+			else{
+			  shiftedEup                -> push_back ( it->pt() );
+			  shiftedPxup                -> push_back ( it->px() );
+			  shiftedPyup                -> push_back ( it->py() );
+			  
+			  shiftedEup                -> push_back ( it->pt() );
+			  shiftedPxup                -> push_back ( it->px() );
+			  shiftedPyup                -> push_back ( it->py() );
+
 			}
 			matchedgenparticlept     -> push_back ( (double)(genparPt) );
 			matchedgenparticleeta    -> push_back ( (double)(genparEta) );
@@ -596,6 +634,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			eta->push_back( it->eta() );
 			phi->push_back( it->phi() );
 			pt ->push_back( it->pt()  );
+			px ->push_back( it->px()  );
+			py ->push_back( it->py()  );
+
 			p  ->push_back( it->p()   );
 
 			if( it->isGlobalMuon() )
@@ -884,6 +925,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put( eta,                        prefix + "Eta"                         + suffix );
 	iEvent.put( phi,                        prefix + "Phi"                         + suffix );
 	iEvent.put( pt,                         prefix + "Pt"                          + suffix );
+	iEvent.put( px,                         prefix + "Px"                          + suffix );
+	iEvent.put( py,                         prefix + "Py"                          + suffix );
 	iEvent.put( globaleta,                        prefix + "GlobalEta"                         + suffix );
 	iEvent.put( globalphi,                        prefix + "GlobalPhi"                         + suffix );
         iEvent.put( globalpt,                         prefix + "GlobalPt"                          + suffix );
@@ -968,6 +1011,11 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	// Energy shift                                                                                                                                                                                                                                         
 	iEvent.put( shiftedEup                 , prefix + "shiftedEup"                  + suffix );
 	iEvent.put( shiftedEdown               , prefix + "shiftedEdown"                  + suffix );
+	iEvent.put( shiftedPxup                 , prefix + "shiftedPxup"                  + suffix );
+	iEvent.put( shiftedPxdown               , prefix + "shiftedPxdown"                  + suffix );
+	
+	iEvent.put( shiftedPyup                 , prefix + "shiftedPyup"                  + suffix );
+	iEvent.put( shiftedPydown               , prefix + "shiftedPydown"                  + suffix );
 	//
 
 	if ( useCocktailRefits )
