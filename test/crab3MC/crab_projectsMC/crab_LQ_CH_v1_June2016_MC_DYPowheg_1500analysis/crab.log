@@ -1,0 +1,178 @@
+Building particle-based isolation 
+***************** 
+switchOnTriggerMatching():
+    PAT trigger production switched on automatically using
+    switchOnTrigger( process, HLT, patTrigger, patTriggerEvent, patDefaultSequence, out )
+---------------------------------------------------------------------
+ Taus:  cms.InputTag("hpsPFTauProducer") -> cms.InputTag("hpsPFTauProducer")
+
+The btaginfo below will be written to the jet collection in the PATtuple (default is all, see PatAlgos/PhysicsTools/python/tools/jetTools.py)
+impactParameterTagInfos
+secondaryVertexTagInfos
+
+The bdiscriminators below will be written to the jet collection in the PATtuple (default is all, see PatAlgos/PhysicsTools/python/tools/jetTools.py)
+jetBProbabilityBJetTags
+jetProbabilityBJetTags
+trackCountingHighPurBJetTags
+trackCountingHighEffBJetTags
+simpleSecondaryVertexHighEffBJetTags
+simpleSecondaryVertexHighPurBJetTags
+combinedSecondaryVertexBJetTags
+
+The btaginfo below will be written to the jet collection in the PATtuple (default is all, see PatAlgos/PhysicsTools/python/tools/jetTools.py)
+impactParameterTagInfos
+secondaryVertexTagInfos
+
+The bdiscriminators below will be written to the jet collection in the PATtuple (default is all, see PatAlgos/PhysicsTools/python/tools/jetTools.py)
+jetBProbabilityBJetTags
+jetProbabilityBJetTags
+trackCountingHighPurBJetTags
+trackCountingHighEffBJetTags
+simpleSecondaryVertexHighEffBJetTags
+simpleSecondaryVertexHighPurBJetTags
+combinedSecondaryVertexBJetTags
+DEBUG 2016-06-22 23:44:34,223: 	 Executing command: 'submit'
+DEBUG 2016-06-22 23:44:34,224: 	 Found CRAB cache file /afs/cern.ch/user/j/jalmond/.crab3
+DEBUG 2016-06-22 23:44:34,233: 	 Checking credentials
+DEBUG 2016-06-22 23:44:34,233: 	 Found proxy file /tmp/x509up_u35111
+DEBUG 2016-06-22 23:44:34,233: 	 Getting proxy life time left
+DEBUG 2016-06-22 23:44:34,938: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u35111 -timeleft
+ output : 86021
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:35,545: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u35111 -actimeleft
+ output : 86020
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:35,546: 	 Proxy valid for 23:53:41 hours
+INFO 2016-06-22 23:44:35,546: 	 Will use CRAB configuration file crab_submitMC_DYPowheg_1500.py
+DEBUG 2016-06-22 23:44:35,547: 	 Loading CRAB configuration file.
+DEBUG 2016-06-22 23:44:38,089: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2016-06-22 23:44:38,208: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jalmond/CN=683103/CN=John Leslie Almond
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:38,208: 	 Checking credentials
+DEBUG 2016-06-22 23:44:38,208: 	 Found proxy file /tmp/x509up_u35111
+DEBUG 2016-06-22 23:44:38,208: 	 Getting proxy life time left
+DEBUG 2016-06-22 23:44:38,816: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u35111 -timeleft
+ output : 86017
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:39,421: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u35111 -actimeleft
+ output : 86016
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:39,421: 	 Proxy valid for 23:53:37 hours
+DEBUG 2016-06-22 23:44:40,029: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u35111 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:40,463: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+DEBUG 2016-06-22 23:44:40,574: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jalmond/CN=683103/CN=John Leslie Almond
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:40,574: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2016-06-22 23:44:40,574: 	 Calculating hash of /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jalmond/CN=683103/CN=John Leslie Almond_cmsweb.cern.ch for credential name
+DEBUG 2016-06-22 23:44:40,782: 	 Executing : 
+ command : myproxy-info -l 74f81be07b5516fdab303be96165a63a8de3efda -s myproxy.cern.ch
+ output : username: 74f81be07b5516fdab303be96165a63a8de3efda
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jalmond/CN=683103/CN=John Leslie Almond
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  timeleft: 709:30:54  (29.6 days)
+
+ error: 
+ retcode : 0
+DEBUG 2016-06-22 23:44:40,783: 	 Myproxy is valid: 2554254
+DEBUG 2016-06-22 23:44:40,783: 	 Command use: submit
+DEBUG 2016-06-22 23:44:40,783: 	 Options use: ['-c', 'crab_submitMC_DYPowheg_1500.py']
+DEBUG 2016-06-22 23:44:41,138: 	 CRABClient version: 3.3.1606
+DEBUG 2016-06-22 23:44:41,138: 	 Instance is prod
+DEBUG 2016-06-22 23:44:41,138: 	 Server base url is cmsweb.cern.ch
+DEBUG 2016-06-22 23:44:41,139: 	 Command url /crabserver/prod/workflow
+DEBUG 2016-06-22 23:44:41,139: 	 Started submission
+DEBUG 2016-06-22 23:44:41,139: 	 Working on /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/Leptoquarks/RootTupleMakerV2/test/crab3MC/crab_projectsMC/crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis
+DEBUG 2016-06-22 23:44:41,576: 	 Loading required information from the environment
+DEBUG 2016-06-22 23:44:41,576: 	 Found CMSSW_5_3_20 for slc6_amd64_gcc472 with base /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20
+DEBUG 2016-06-22 23:44:41,604: 	 UNIQUE NAME: tarUUID f7bbee70-1df5-410a-a652-bd3a90aefc39 
+DEBUG 2016-06-22 23:44:41,605: 	 self.config: from WMCore.Configuration import Configuration
+config = Configuration()
+config.section_('General')
+config.General.transferLogs = False
+config.General.transferOutputs = True
+config.General.workArea = 'crab_projectsMC'
+config.General.requestName = 'LQ_CH_v1_June2016_MC_DYPowheg_1500analysis'
+config.section_('JobType')
+config.JobType.psetName = 'rootTupleMaker_CRAB_MC_2012_53X_cfg.py'
+config.JobType.pluginName = 'Analysis'
+config.section_('Data')
+config.Data.inputDataset = '/DYToMuMu_M-1500_CT10_TuneZ2star_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7C1-v1/AODSIM'
+config.Data.outputDatasetTag = 'CRAB3_LQ_ISR_MC_2016_June_DYToMuMu_M-1500_CT10_TuneZ2star_8TeV-powheg-pythia6'
+config.Data.publication = True
+config.Data.unitsPerJob = 1
+config.Data.inputDBS = 'global'
+config.Data.splitting = 'FileBased'
+config.Data.outLFNDirBase = '/store/user/jalmond/'
+config.section_('Site')
+config.Site.blacklist = ['T2_ES_IFCA', 'T2_IT_Legnaro']
+config.Site.storageSite = 'T3_KR_KISTI'
+config.section_('User')
+config.section_('Debug')
+
+DEBUG 2016-06-22 23:44:41,605: 	 self.config.JobType.psetName: rootTupleMaker_CRAB_MC_2012_53X_cfg.py
+INFO 2016-06-22 23:44:41,605: 	 Importing CMSSW configuration rootTupleMaker_CRAB_MC_2012_53X_cfg.py
+INFO 2016-06-22 23:44:44,199: 	 Finished importing CMSSW configuration rootTupleMaker_CRAB_MC_2012_53X_cfg.py
+DEBUG 2016-06-22 23:44:44,199: 	 Writing CMSSW configuration to /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/Leptoquarks/RootTupleMakerV2/test/crab3MC/crab_projectsMC/crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis/inputs/PSet.py
+DEBUG 2016-06-22 23:44:45,723: 	 The following EDM output files will be collected: []
+DEBUG 2016-06-22 23:44:45,724: 	 The following TFile output files will be collected: ['file.root']
+DEBUG 2016-06-22 23:44:45,724: 	 The following user output files will be collected: []
+DEBUG 2016-06-22 23:44:45,724: 	 Loading required information from the environment
+DEBUG 2016-06-22 23:44:45,724: 	 Found CMSSW_5_3_20 for slc6_amd64_gcc472 with base /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20
+DEBUG 2016-06-22 23:44:45,724: 	 Making tarball in /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/Leptoquarks/RootTupleMakerV2/test/crab3MC/crab_projectsMC/crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis/inputs/f7bbee70-1df5-410a-a652-bd3a90aefc39default.tgz
+DEBUG 2016-06-22 23:44:45,746: 	 Checking directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/lib
+DEBUG 2016-06-22 23:44:45,746: 	 Adding directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/lib to tarball
+DEBUG 2016-06-22 23:44:55,467: 	 Checking directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/biglib
+DEBUG 2016-06-22 23:44:55,469: 	 Checking directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/module
+DEBUG 2016-06-22 23:44:55,509: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/PhysicsTools/PatAlgos/interface to tarball
+DEBUG 2016-06-22 23:44:55,531: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/PhysicsTools/PatUtils/data to tarball
+DEBUG 2016-06-22 23:44:55,671: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/PhysicsTools/PatUtils/interface to tarball
+DEBUG 2016-06-22 23:44:55,698: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/PhysicsTools/SelectorUtils/interface to tarball
+DEBUG 2016-06-22 23:44:55,721: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/DataFormats/METReco/interface to tarball
+DEBUG 2016-06-22 23:44:55,741: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/JetMETCorrections/Type1MET/data to tarball
+DEBUG 2016-06-22 23:44:55,745: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/JetMETCorrections/Type1MET/interface to tarball
+DEBUG 2016-06-22 23:44:55,754: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/RecoMET/METFilters/data to tarball
+DEBUG 2016-06-22 23:44:55,756: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/RecoMET/METFilters/interface to tarball
+DEBUG 2016-06-22 23:44:55,764: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/EgammaAnalysis/ElectronTools/data to tarball
+DEBUG 2016-06-22 23:45:09,571: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/EgammaAnalysis/ElectronTools/interface to tarball
+DEBUG 2016-06-22 23:45:09,605: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/SHarper/HEEPAnalyzer/interface to tarball
+DEBUG 2016-06-22 23:45:09,632: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/CMGTools/External/data to tarball
+DEBUG 2016-06-22 23:45:21,642: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/CMGTools/External/interface to tarball
+DEBUG 2016-06-22 23:45:21,827: 	 Adding data directory /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/Leptoquarks/RootTupleMakerV2/interface to tarball
+DEBUG 2016-06-22 23:45:23,125: 	 Uploading archive /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/Leptoquarks/RootTupleMakerV2/test/crab3MC/crab_projectsMC/crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis/inputs/f7bbee70-1df5-410a-a652-bd3a90aefc39default.tgz to the CRAB cache. Using URI https://cmsweb.cern.ch/crabcache
+DEBUG 2016-06-22 23:45:47,377: 	 Result uploading input files: fdfa6b72fcddcf9ba93cfd7750f9c3ae0472d6ff8a3575483dbeadc7555d1c84.tar.gz 
+WARNING 2016-06-22 23:45:47,378: 	 Warning: The following output files will not be published, as they are not EDM files: ['file.root']
+INFO 2016-06-22 23:45:47,378: 	 Sending the request to the server
+DEBUG 2016-06-22 23:45:47,378: 	 Submitting {'maxjobruntime': 1250, 'ignorelocality': 0, 'savelogsflag': 0, 'useparent': 0, 'asyncdest': 'T3_KR_KISTI', 'algoargs': 1, 'cachefilename': 'fdfa6b72fcddcf9ba93cfd7750f9c3ae0472d6ff8a3575483dbeadc7555d1c84.tar.gz', 'numcores': 1, 'addoutputfiles': [], 'generator': 'pythia', 'maxmemory': 2000, 'publishdbsurl': 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter', 'priority': 10, 'jobsw': 'CMSSW_5_3_20', 'edmoutfiles': [], 'userfiles': [], 'primarydataset': '', 'inputdata': '/DYToMuMu_M-1500_CT10_TuneZ2star_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7C1-v1/AODSIM', 'lfn': '/store/user/jalmond/', 'dryrun': 0, 'workflow': 'crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis', 'adduserfiles': [], 'nonprodsw': 0, 'tfileoutfiles': ['file.root'], 'oneEventMode': 0, 'cacheurl': 'https://cmsweb.cern.ch/crabcache', 'saveoutput': 1, 'publication': 1, 'jobarch': 'slc6_amd64_gcc472', 'totalunits': 0, 'splitalgo': 'FileBased', 'nonvaliddata': 0, 'dbsurl': 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader', 'publishgroupname': 0, 'jobtype': 'Analysis', 'siteblacklist': ['T2_ES_IFCA', 'T2_IT_Legnaro'], 'publishname2': 'CRAB3_LQ_ISR_MC_2016_June_DYToMuMu_M-1500_CT10_TuneZ2star_8TeV-powheg-pythia6'} 
+DEBUG 2016-06-22 23:45:47,379: 	 Encoded submit request: maxjobruntime=1250&ignorelocality=0&savelogsflag=0&useparent=0&asyncdest=T3_KR_KISTI&algoargs=1&cachefilename=fdfa6b72fcddcf9ba93cfd7750f9c3ae0472d6ff8a3575483dbeadc7555d1c84.tar.gz&numcores=1&generator=pythia&maxmemory=2000&publishdbsurl=https%3A%2F%2Fcmsweb.cern.ch%2Fdbs%2Fprod%2Fphys03%2FDBSWriter&priority=10&jobsw=CMSSW_5_3_20&primarydataset=&inputdata=%2FDYToMuMu_M-1500_CT10_TuneZ2star_8TeV-powheg-pythia6%2FSummer12_DR53X-PU_S10_START53_V7C1-v1%2FAODSIM&lfn=%2Fstore%2Fuser%2Fjalmond%2F&dryrun=0&workflow=crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis&nonprodsw=0&oneEventMode=0&cacheurl=https%3A%2F%2Fcmsweb.cern.ch%2Fcrabcache&saveoutput=1&publication=1&jobarch=slc6_amd64_gcc472&totalunits=0&splitalgo=FileBased&nonvaliddata=0&dbsurl=https%3A%2F%2Fcmsweb.cern.ch%2Fdbs%2Fprod%2Fglobal%2FDBSReader&publishgroupname=0&jobtype=Analysis&publishname2=CRAB3_LQ_ISR_MC_2016_June_DYToMuMu_M-1500_CT10_TuneZ2star_8TeV-powheg-pythia6&siteblacklist=T2_ES_IFCA&siteblacklist=T2_IT_Legnaro&tfileoutfiles=file.root
+DEBUG 2016-06-22 23:45:48,104: 	 Result: {'result': [{'RequestName': '160622_214547:jalmond_crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis'}]}
+INFO 2016-06-22 23:45:48,108: 	 Success: Your task has been delivered to the CRAB3 server.
+INFO 2016-06-22 23:45:48,109: 	 Task name: 160622_214547:jalmond_crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis
+INFO 2016-06-22 23:45:48,109: 	 Please use 'crab status' to check how the submission process proceeds.
+DEBUG 2016-06-22 23:45:48,109: 	 About to return
+INFO 2016-06-22 23:45:48,121: 	 Log file is /afs/cern.ch/work/j/jalmond/data/LQntuples/SLC6/CMSSW_5_3_20/src/Leptoquarks/RootTupleMakerV2/test/crab3MC/crab_projectsMC/crab_LQ_CH_v1_June2016_MC_DYPowheg_1500analysis/crab.log

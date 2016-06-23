@@ -13,6 +13,9 @@ RootTupleMakerV2_MET::RootTupleMakerV2_MET(const edm::ParameterSet& iConfig) :
   produces <std::vector<double> > ( prefix + "MET" + suffix );
   produces <std::vector<double> > ( prefix + "METPhi" + suffix );
   produces <std::vector<double> > ( prefix + "SumET" + suffix );
+  produces <std::vector<double> > ( prefix + "METx" + suffix );
+  produces <std::vector<double> > ( prefix + "METy" + suffix );
+
   if ( store_uncorrected_MET ) {
     produces <std::vector<double> > ( prefix + "METUncorr" + suffix );
     produces <std::vector<double> > ( prefix + "METPhiUncorr" + suffix );
@@ -33,6 +36,9 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::auto_ptr<std::vector<double> >  met  ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  metphi  ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  sumet  ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  metx  ( new std::vector<double>()  );
+  std::auto_ptr<std::vector<double> >  mety  ( new std::vector<double>()  );
+
   std::auto_ptr<std::vector<double> >  metuncorr  ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  metphiuncorr  ( new std::vector<double>()  );
   std::auto_ptr<std::vector<double> >  sumetuncorr  ( new std::vector<double>()  );
@@ -53,6 +59,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       // fill in all the vectors
       met->push_back( it->pt() );
+      metx->push_back( it->px() );
+      mety->push_back( it->py() );
       metphi->push_back( it->phi() );
       sumet->push_back( it->sumEt() );
       
@@ -86,6 +94,8 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //-----------------------------------------------------------------
   // put vectors in the event
   iEvent.put( met, prefix + "MET" + suffix );
+  iEvent.put( metx, prefix + "METx" + suffix );
+  iEvent.put( mety, prefix + "METy" + suffix );
   iEvent.put( metphi, prefix + "METPhi" + suffix );
   iEvent.put( sumet, prefix + "SumET" + suffix );
   if ( store_uncorrected_MET ) {

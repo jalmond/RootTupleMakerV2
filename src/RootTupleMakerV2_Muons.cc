@@ -644,6 +644,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
  		                globaleta->push_back( it->globalTrack()->eta() );
 			        globalphi->push_back( it->globalTrack()->phi() );
 				globalpt ->push_back( it->globalTrack()->pt()  );
+
 				etaError    -> push_back ( it->globalTrack()->etaError()    );
 				phiError    -> push_back ( it->globalTrack()->phiError()    );
 				ptError     -> push_back ( it->globalTrack()->ptError ()    );
@@ -661,6 +662,7 @@ produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				qoverpError -> push_back ( it->track()->qoverpError() );
 				
 				globaleta->push_back( it->track()->eta() );
+
                                 globalphi->push_back( it->track()->phi() );
                                 globalpt ->push_back( it->track()->pt()  );
 
